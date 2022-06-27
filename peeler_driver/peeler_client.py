@@ -32,9 +32,7 @@ class BROOKS_PEELER_CLIENT():
         except:
             print("Wrong port entered")
             pass
-
         ser = serial.Serial(self.host_path, self.baud_rate)
-
         return ser
 
 
@@ -211,7 +209,7 @@ class BROOKS_PEELER_CLIENT():
         print("Threshold Value: " + threshold_value)
         return threshold_value
 
-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
+
     def sensor_threshold_higher(self, seal_higher_input = "", threshold_value_high = "Not Found"):
         seal_higher_input = input("3 digit threshold value: ")
         cmd_string = '*sealhigher:%s\r\n'%(seal_higher_input)
@@ -279,4 +277,3 @@ if __name__ == "__main__":
 
     dummy_peel = BROOKS_PEELER_CLIENT("/dev/ttyUSB0")
     dummy_peel.conveyor_in()
-
