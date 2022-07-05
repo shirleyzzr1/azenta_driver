@@ -36,7 +36,9 @@ class A4S_SEALER_CLIENT():
         return ser
 
     def send_command(self, command, success_msg ="", err_msg = ""):
-
+        ser = self.connect_peeler()
+        ser.write(command.encode('*00SR=zz!'))
+        ser.write(command.encode('utf-8')) 
      
 
     def get_error(self):
