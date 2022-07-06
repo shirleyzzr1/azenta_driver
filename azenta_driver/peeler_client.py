@@ -11,15 +11,15 @@ import re
 class BROOKS_PEELER_CLIENT():
     """
     Description: 
-                 - Python interface that allows remote commands to be executed using simple string messages over TCP/IP on PF400 cobot. 
+                 - Python interface that allows remote commands to be executed using simple string messages to XPeel. 
     Serial Communication Messages from the Robot:
-                 - Responses begin with a "0" if the command was successful, or a negative error code number
+                 - Responses from XPeel are displayed in the terminal.
     """
     def __init__(self, host_path, baud_rate=9600):
 
         self.host_path = host_path
         self.baud_rate = baud_rate
-        self.status_var = "potato"
+        self.status_var = ""
         self.version = self.check_version()
         self.tape_remaining_var = 0
         self.sensor_threshold_var = 0
@@ -32,7 +32,6 @@ class BROOKS_PEELER_CLIENT():
         except:
             print("Wrong port entered")
             pass
-        ser = serial.Serial(self.host_path, self.baud_rate)
         return ser
 
 
@@ -83,6 +82,11 @@ class BROOKS_PEELER_CLIENT():
             "01" : "Error: Conveyor motor stalled",
             "02" : "Error: Elevator motor stalled",
             "03" : "Error: Take up spool staled",
+            "04" : "Error: Seal not removed",
+            "05" : "Error: Illegal Command",
+            "06" : "Error: No plate found", 
+            "07" : "Error: Out of tape, or tape broke",
+            "08" : "Error: Parameters not saved",
             "09" : "Error: Stop button pressed while running",
             "10" : "Error: Seal Sensor unplugged or broke",
             "20" : "Error: Less than 30 seals left on the supply roll",
@@ -155,7 +159,7 @@ class BROOKS_PEELER_CLIENT():
             8: ["default +4 mm", "slow"],
             9: ["custom", "custom"]
         }
-        cmd_string = '*xpeel:%s%s\r\n'%(param_set_num, param_time)
+        cmd_string = '*xpeel:%s%s\r\n'%(param_set_num, int(param_time/2.5))
         success_msg = "Successfully adjusted peel location to %s and speed to %s" %(peel_dict[param_set_num][0], peel_dict[param_set_num][1])
         err_msg = "Failed to adjust peel location to %s and speed to %s"%(peel_dict[param_set_num][0], peel_dict[param_set_num][1])
         self.send_command(cmd_string, success_msg, err_msg)      
@@ -266,14 +270,11 @@ class BROOKS_PEELER_CLIENT():
         success_msg = "Successfully moved spool 10 mm"
         err_msg = "Failed to move spool 10 mm"
         self.send_command(cmd_string, success_msg, err_msg) 
-    
-    # def system_info(self, var = matches_ver):
-    #     print(var)
-        
+     
 
 
 
 if __name__ == "__main__":
 
     dummy_peel = BROOKS_PEELER_CLIENT("/dev/ttyUSB0")
-    dummy_peel.conveyor_in()
+    dummy_peel.check_status()
