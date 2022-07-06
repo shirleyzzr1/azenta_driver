@@ -1,13 +1,13 @@
-## Brooks XPeel 
+# Brooks XPeel 
 
 
-### Authors and Maintainers
+## Authors and Maintainers
 * Sanjiv Parthasarathy
 * Rafael Vescovi
 * Doga Ozgulbas
 <p>&nbsp;</p>
 
-### Description
+## Description
 A repository for Brooks XPeel, including user manuals and remote control interfaces.
 
 This package guides a user to remotely control and receive feedback from the XPeel.
@@ -15,7 +15,7 @@ This package guides a user to remotely control and receive feedback from the XPe
 Peeler is the main object responsible for removing seals off of microplates
 <p>&nbsp;</p>
 
-### Current Features
+## Current Features
 * Peeler initialization
 * Peeler information (version number, current status, tape remaining, etc.)
 * Basic movements (move conveyor, spool, reset microplate, etc.)
@@ -24,14 +24,14 @@ Peeler is the main object responsible for removing seals off of microplates
 * Displays up to 3 error messages at at ime
 <p>&nbsp;</p>
 
-### User Guide
-1. Connect XPeel to device with a serial to usb cable.
-2. Clone azenta_driver repository
-	* Open terminal
-	
-            git clone <insert link>
+## User Guide
 
-3. Launch azenta driver on personal device
+1. ### Git Clone azenta_driver repository
+	In terminal:
+	
+		git clone <insert link>
+
+2. ### Launching azenta driver on personal device
 
    In terminal:
 
@@ -41,20 +41,19 @@ Peeler is the main object responsible for removing seals off of microplates
         cd ..
         python setup.py
 
-4. Send commands to XPeel:
+3. ### Sending commands to XPeel:
+	* Connect XPeel Driver to device with a serial to usb cable.
+	* Find XPeel port ex: "/dev/ttyUSB0" 
 
-   In Python:
+   	In Python:
     
 		from azenta_driver.peeler_client import BROOKS_PEELER_CLIENT
+		peeler = BROOKS_PEELER_CLIENT(port)
 
-   	* Find xpeel port ex: "/dev/ttyUSB0" 
-
-			peeler = BROOKS_PEELER_CLIENT(Port)
-
-   	* Send commands (provided below)
+	* Send commands (provided below)
 <p>&nbsp;</p>
 
-### Commands
+## Commands
 	   
 1.     peeler.check_status()
 
@@ -174,7 +173,7 @@ This command causes the spool to advance approximately 10mm of tape.
 
 <p>&nbsp;</p>
 
-### High Level Concepts
+## High Level Concepts
 1. Peeler information is initialized
 2. When a command is called a corresponding string is sent to the peeler.
 3. The Peeler interprets this string and ouputs data/performs an action accordingly.
@@ -182,7 +181,7 @@ This command causes the spool to advance approximately 10mm of tape.
 		
 <p>&nbsp;</p>
 
-### Python Dependencies
+## Python Dependencies
 Code developed and tested with Python 3.9.12
 
 Required packages:
