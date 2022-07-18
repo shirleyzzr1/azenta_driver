@@ -19,10 +19,12 @@ class BROOKS_PEELER_CLIENT():
 
         self.host_path = host_path
         self.baud_rate = baud_rate
+        self.peeler_output = ""
         self.status_var = ""
-        self.version = self.check_version()
+        # self.version = self.check_version()
         self.tape_remaining_var = 0
         self.sensor_threshold_var = 0
+        
 
 
     def connect_peeler(self):
@@ -30,7 +32,7 @@ class BROOKS_PEELER_CLIENT():
         try:
             ser = serial.Serial(self.host_path, self.baud_rate)
         except:
-            print("Wrong port entered")
+            self.peeler_output = self.peeler_output + "Wrong port entered" + '\n'
             pass
         return ser
 
@@ -49,8 +51,8 @@ class BROOKS_PEELER_CLIENT():
     
 
     def send_command(self, command, success_msg, err_msg, timeout=1):
-
-        print('COMMAND: ' + command)
+        
+        self.peeler_output = self.peeler_output+ 'Command: ' + command + "\n"
         #check if connected / if not (error? / reconnect?)
         ser = self.connect_peeler()        
         ser.write(command.encode('utf-8'))        
@@ -63,11 +65,11 @@ class BROOKS_PEELER_CLIENT():
             new_string = self.response_fun(timeout)
 
             if new_string != "":
-                print(new_string)
+                self.peeler_output = self.peeler_output + new_string + '\n'
 
             response_buffer = response_buffer + new_string
             if "ack" in new_string:
-                print('ACK TRUE')
+                self.peeler_output = self.peeler_output + 'ACK TRUE' + '\n'
 
             if time.time() - ready_timer > 20:
                 break
@@ -106,7 +108,7 @@ class BROOKS_PEELER_CLIENT():
         else:
             error_code_msg = error_dict[first_error]+ "\n" + error_dict[second_error] + "\n" + error_dict[third_error]
 
-        print(error_code_msg)
+        self.peeler_output = self.peeler_output + error_code_msg + '\n'
 
 
     def check_status(self):
@@ -129,7 +131,7 @@ class BROOKS_PEELER_CLIENT():
 
         version = matches_ver[1]
 
-        print('Version = ' + version)
+        self.peeler_output = self.peeler_output + 'Version = ' + version + '\n'
         return version
 
 
@@ -182,8 +184,8 @@ class BROOKS_PEELER_CLIENT():
 
         deseals_supply = int(matches[1])*10
         deseals_take = int(matches[2]) *10
-        print("Deseals on supply spool: " + str(deseals_supply))
-        print("Deseals on take-up spool: "+ str(deseals_take))
+        self.peeler_output = self.peeler_output + "Deseals on supply spool: " + str(deseals_supply) + '\n'
+        self.peeler_output = self.peeler_output + "Deseals on take-up spool: "+ str(deseals_take) + '\n'
         return deseals_supply, deseals_take
 
 
@@ -209,8 +211,8 @@ class BROOKS_PEELER_CLIENT():
         matches = re.search(r"\*seal:(\d+)",response)
 
         threshold_value = matches[1]
-        
-        print("Threshold Value: " + threshold_value)
+
+        self.peeler_output = self.peeler_output + "Threshold Value: " + threshold_value + '\n'
         return threshold_value
 
 
@@ -225,7 +227,8 @@ class BROOKS_PEELER_CLIENT():
 
         threshold_value_high = matches[1]
 
-        print("Threshold Value: " + threshold_value_high)
+
+        self.peeler_output = self.peeler_output + "Threshold Value: " + threshold_value_high + '\n'
 
 
     def sensor_threshold_lower(self, seal_lower_input = "", threshold_value_low = "Not Found"):
@@ -239,7 +242,7 @@ class BROOKS_PEELER_CLIENT():
 
         threshold_value_low = matches[1]
 
-        print("Threshold Value: " + threshold_value_low)
+        self.peeler_output = self.peeler_output + "Threshold Value: " + threshold_value_low + '\n'
 
     def conveyor_out(self):
         cmd_string = '*moveout\r\n'
@@ -277,3 +280,7 @@ class BROOKS_PEELER_CLIENT():
 if __name__ == "__main__":
 
     dummy_peel = BROOKS_PEELER_CLIENT("/dev/ttyUSB0")
+    dummy_peel.check_status()
+    for i in range(5):
+        print('\n')
+    print(dummy_peel.peeler_output)
