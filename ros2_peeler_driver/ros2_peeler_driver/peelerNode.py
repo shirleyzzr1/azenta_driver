@@ -13,9 +13,13 @@ class peelerNode(Node):
 
     def __init__(self):
 
-        super().__init__('Peeler_Node')
 
-        print('Hi from ros2_peeler_driver.')
+        '''
+        The init function is neccesary for the peelerNode class to initialize all variables, parameters, and other functions.
+        Inside the function the parameters exist, and calls to other functions and services are made so they can be executed in main.
+        '''
+
+        super().__init__('Peeler_Node')
 
 
         timer_period = 0.5  # seconds
@@ -42,7 +46,7 @@ class peelerNode(Node):
 
     def actionCallback(self, msg):
 
-        self.get_logger().info('I am the action topic: "%s"' % msg.data)
+        self.get_logger().info('I am the action topic "%s"' % msg.data)
 
 
     def stateCallback(self):
