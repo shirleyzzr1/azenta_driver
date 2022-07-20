@@ -280,7 +280,7 @@ class BROOKS_PEELER_CLIENT():
 if __name__ == "__main__":
 
     dummy_peel = BROOKS_PEELER_CLIENT("/dev/ttyUSB0")
-    dummy_peel.peel(1, 2.5)
+    dummy_peel.seal_check()
     # for i in range(5):
     #     print('\n')
-    # print(dummy_peel.peeler_output)
+    print(dummy_peel.peeler_output)

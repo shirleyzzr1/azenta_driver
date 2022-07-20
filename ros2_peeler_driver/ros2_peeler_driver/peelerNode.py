@@ -34,7 +34,7 @@ class peelerNode(Node):
         self.actionSub  # prevent unused variable warning
 
 
-        self.statePub = self.create_publisher(String, 'state', 10)
+        self.statePub = self.create_publisher(String, ' ', 10)
 
         self.stateTimer = self.create_timer(timer_period, self.stateCallback)
 
