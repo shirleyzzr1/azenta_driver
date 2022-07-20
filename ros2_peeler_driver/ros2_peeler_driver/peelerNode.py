@@ -3,6 +3,7 @@
 import rclpy                 # import Rospy
 from rclpy.node import Node  # import Rospy Node
 from std_msgs.msg import String
+from services.srv import peelerAction
 
 
 from .drivers.peeler_client import BROOKS_PEELER_CLIENT # import peeler driver
@@ -49,6 +50,31 @@ class peelerNode(Node):
 
         self.descriptionTimer = self.create_timer(timer_period, self.descriptionCallback)
 
+
+        self.actionService = self.create_service(String, "actionCall", self.actionService)
+
+
+    def actionService(self, request, response):
+
+
+        self.manager_command = request.action # Run commands if manager sends corresponding command
+
+        match self.manager_command:
+            
+            case "test_command":
+                peeler.check_status()
+                peeler.check_version()
+                peeler.reset()
+
+                response.success = True
+            
+            case other:
+                response.success = False
+
+        while peeler.peeler_output
+
+        return response
+    
 
     def actionCallback(self, msg):
 

@@ -364,7 +364,7 @@ if __name__ == "__main__":
     '''
 
     dummy_peel = BROOKS_PEELER_CLIENT("/dev/ttyUSB0")
-    dummy_peel.seal_check()
+    dummy_peel.check_status()
     # for i in range(5):
     #     print('\n')
     print(dummy_peel.peeler_output)
