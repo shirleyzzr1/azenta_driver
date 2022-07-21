@@ -48,6 +48,11 @@ class peelerNode(Node):
 
     def descriptionCallback(self, request, response):
 
+        '''
+        the descriptionCallback function is a service that can be called to showcase the available actions a robot
+        can preform as well as deliver essential information required by the master node.
+        '''
+
         if request.description_request == 'Peeler': 
 
             response.description_response = self.peelerDescription
@@ -87,9 +92,9 @@ class peelerNode(Node):
     def stateCallback(self):
 
         '''
-        Publishes the peeler state to the 'state' topic.
+        Publishes the peeler state to the 'state' topic. 
         '''
-        
+
         msg1 = String()
         msg1.data = 'This is the state topic: %d' % self.i1
         self.statePub.publish(msg1)
