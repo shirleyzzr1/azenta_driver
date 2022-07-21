@@ -3,7 +3,7 @@
 import rclpy                 # import Rospy
 from rclpy.node import Node  # import Rospy Node
 from std_msgs.msg import String
-from services.srv import peelerAction
+from services.srv import PeelerDescription
 
 
 from .drivers.peeler_client import BROOKS_PEELER_CLIENT # import peeler driver
@@ -24,87 +24,78 @@ class peelerNode(Node):
         '''
 
         super().__init__('Peeler_Node')
+        
+        print("Wakey wakey eggs & bakey")
+
+        self.peelerDescription = ["Hello", "World"]
 
 
         timer_period = 0.5  # seconds
 
-        self.i1 = 0         # Count 1 
-
-        self.i2 = 0         # Count 2
-        
-
-        self.actionSub = self.create_subscription(String, 'action', self.actionCallback, 10)
-
-        self.actionSub  # prevent unused variable warning
+        self.i1 = 0         # Count 1   
 
 
         self.statePub = self.create_publisher(String, ' ', 10)
 
         self.stateTimer = self.create_timer(timer_period, self.stateCallback)
 
+
+        # self.actionService = self.create_service(String, "actionCall", self.actionService)
+
+#############################################################################
+        self.srv = self.create_service(PeelerDescription, "peeler_description", self.descriptionCallback)
+
+
+    def descriptionCallback(self, request, response):
+
+        if request.description_request == 'Peeler': 
+
+            response.description_response = self.peelerDescription
+
+            self.get_logger().info('Incoming request Good')
         
-        # self.stateOutput = self.create_timer(timer_period, self.driverCommunication)      Publishing peeler output
+        else:
 
-        
-        self.descriptionPub = self.create_publisher(String, 'description', 10)
-
-        self.descriptionTimer = self.create_timer(timer_period, self.descriptionCallback)
-
-
-        self.actionService = self.create_service(String, "actionCall", self.actionService)
-
-
-    def actionService(self, request, response):
-
-
-        self.manager_command = request.action # Run commands if manager sends corresponding command
-
-        match self.manager_command:
-            
-            case "test_command":
-                peeler.check_status()
-                peeler.check_version()
-                peeler.reset()
-
-                response.success = True
-            
-            case other:
-                response.success = False
-
-        while peeler.peeler_output
+            response.description_response = 'Peeler Description Failed'
 
         return response
+
+
+    # def actionService(self, request, response):
+
+
+    #     self.manager_command = request.action # Run commands if manager sends corresponding command
+
+    #     match self.manager_command:
+            
+    #         case "test_command":
+    #             peeler.check_status()
+    #             peeler.check_version()
+    #             peeler.reset()
+
+    #             response.success = True
+            
+    #         case other:
+    #             response.success = False
+
+    #     # while peeler.peeler_output.count("ready") < command_count:
+
+
+    #     # return response
     
 
-    def actionCallback(self, msg):
-
-        '''
-        Stores the data received from the 'action' topic.
-        '''
-
-        self.get_logger().info('I am the action topic "%s"' % msg.data)
-
-
     def stateCallback(self):
+
         '''
         Publishes the peeler state to the 'state' topic.
         '''
+        
         msg1 = String()
         msg1.data = 'This is the state topic: %d' % self.i1
         self.statePub.publish(msg1)
         self.get_logger().info('Publishing: "%s"' % msg1.data)
         self.i1 += 1
 
-    def descriptionCallback(self):
-        '''
-        Publishes the peeler description to the 'description' topic.
-        '''
-
-        msg2 = String()
-        msg2.data = 'This is the description topic %d' % self.i2
-        self.descriptionPub.publish(msg2)
-        self.get_logger().info('Publishing: "%s"' % msg2.data)
-        self.i2 += 1
 
         
     def driverCommunication(self):
