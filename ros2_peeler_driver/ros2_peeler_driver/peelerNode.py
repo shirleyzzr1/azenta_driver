@@ -4,6 +4,7 @@ import rclpy                 # import Rospy
 from rclpy.node import Node  # import Rospy Node
 from std_msgs.msg import String
 from services.srv import PeelerDescription
+from services.srv import PeelerActions
 
 
 from .drivers.peeler_client import BROOKS_PEELER_CLIENT # import peeler driver
@@ -40,16 +41,15 @@ class peelerNode(Node):
         self.stateTimer = self.create_timer(timer_period, self.stateCallback)
 
 
-        # self.actionService = self.create_service(String, "actionCall", self.actionService)
+        self.actionSrv = self.create_service(PeelerActions, "peeler_actions", self.actionCallback)
 
-#############################################################################
-        self.srv = self.create_service(PeelerDescription, "peeler_description", self.descriptionCallback)
+        self.descriptionSrv = self.create_service(PeelerDescription, "peeler_description", self.descriptionCallback)
 
 
     def descriptionCallback(self, request, response):
 
         '''
-        the descriptionCallback function is a service that can be called to showcase the available actions a robot
+        The descriptionCallback function is a service that can be called to showcase the available actions a robot
         can preform as well as deliver essential information required by the master node.
         '''
 
@@ -66,28 +66,29 @@ class peelerNode(Node):
         return response
 
 
-    # def actionService(self, request, response):
+    def actionCallback(self, request, response):
 
+        '''
+        The actionCallback function is a service that can be called to execute the available actions the robot
+        can preform.
+        '''
 
-    #     self.manager_command = request.action # Run commands if manager sends corresponding command
+        self.manager_command = request.action # Run commands if manager sends corresponding command
 
-    #     match self.manager_command:
+        match self.manager_command:
             
-    #         case "test_command":
-    #             peeler.check_status()
-    #             peeler.check_version()
-    #             peeler.reset()
+            case "test_command":
+                peeler.check_status()
+                peeler.check_version()
+                peeler.reset()
 
-    #             response.success = True
+                response.success = True
             
-    #         case other:
-    #             response.success = False
+            case other:
+                response.success = False
 
-    #     # while peeler.peeler_output.count("ready") < command_count:
+        return response
 
-
-    #     # return response
-    
 
     def stateCallback(self):
 
@@ -101,27 +102,6 @@ class peelerNode(Node):
         self.get_logger().info('Publishing: "%s"' % msg1.data)
         self.i1 += 1
 
-
-        
-    def driverCommunication(self):
-
-        '''
-        Matches action received from action subscriber to peeler actions,
-        and makes driver execute the command required to complete the action.
-        '''
-
-        self.manager_command = "test_command"  # Run commands if manager sends corresponding command
-
-
-        match self.manager_command:
-            
-            case "test_command":
-                peeler.check_status()
-                peeler.check_version()
-                peeler.reset()
-    
-        # self.statePub.publish(peeler.peeler_output)
-        # self.get_logger().info('Publishing: "%s"' % peeler.peeler_output)      Publishing peeler output
 
 
 def main(args = None):
