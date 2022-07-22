@@ -12,10 +12,12 @@ from .drivers.peeler_client import BROOKS_PEELER_CLIENT # import peeler driver
 peeler = BROOKS_PEELER_CLIENT("/dev/ttyUSB0")           # port name for peeler
 
 class peelerNode(Node):
+
     '''
     The peelerNode inputs data from the 'action' topic, providing a set of commands for the driver to execute. It then receives feedback, 
     based on the executed command and publishes the state of the peeler and a description of the peeler to the respective topics.
     '''
+    
     def __init__(self):
 
 

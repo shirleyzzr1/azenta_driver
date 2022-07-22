@@ -23,6 +23,7 @@ setup(
         'console_scripts': [
             'peelerNode = ros2_peeler_driver.peelerNode:main',
             'cameraNode = ros2_peeler_driver.cameraNode:main',
+            'masterNode = ros2_peeler_driver.masterNode:main',
         ],
     },
 )

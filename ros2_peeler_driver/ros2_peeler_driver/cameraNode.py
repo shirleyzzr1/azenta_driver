@@ -64,15 +64,15 @@ def main(args=None):
   rclpy.init(args=args)
   
   # Create the node
-  image_publisher = cameraNode()
+  node = cameraNode()
   
   # Spin the node so the callback function is called.
-  rclpy.spin(image_publisher)
+  rclpy.spin(node)
   
   # Destroy the node explicitly
   # (optional - otherwise it will be done automatically
   # when the garbage collector destroys the node object)
-  image_publisher.destroy_node()
+  node.destroy_node()
   
   # Shutdown the ROS client library for Python
   rclpy.shutdown()
