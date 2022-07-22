@@ -27,10 +27,31 @@ class masterNode(Node):
         
         print("Wakey wakey eggs & bakey")
 
+
         self.stateSub = self.create_subscription(String, 'state', self.stateCallback, 10)
         
         self.stateSub # prevent unused variable warning
 
+
+###################################### Client writing in progress
+
+        # self.actionCli = self.create_client(PeelerActions, 'add_two_ints')
+
+        # while not self.actionCli.wait_for_service(timeout_sec=1.0):
+
+        #     self.get_logger().info('service not available, waiting again...')
+
+        # self.actionReq = PeelerActions.Request()
+
+
+    # def send_request(self, msg):
+    #     self.req.a = a
+    #     self.req.b = b
+    #     self.future = self.cli.call_async(self.req)
+    #     rclpy.spin_until_future_complete(self, self.future)
+    #     return self.future.result()
+
+####################################
 
     def stateCallback(self, msg):
 
