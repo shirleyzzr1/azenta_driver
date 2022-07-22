@@ -3,6 +3,7 @@
 import rclpy                 # import Rospy
 from rclpy.node import Node  # import Rospy Node
 from std_msgs.msg import String
+
 from services.srv import PeelerDescription
 from services.srv import PeelerActions
 
@@ -17,7 +18,7 @@ class peelerNode(Node):
     The peelerNode inputs data from the 'action' topic, providing a set of commands for the driver to execute. It then receives feedback, 
     based on the executed command and publishes the state of the peeler and a description of the peeler to the respective topics.
     '''
-    
+
     def __init__(self):
 
 
@@ -30,12 +31,12 @@ class peelerNode(Node):
         
         print("Wakey wakey eggs & bakey")
 
-        self.peelerDescription = ["Hello", "World"]
+        self.peelerDescription = [ ]
 
 
         timer_period = 0.5  # seconds
 
-        self.i1 = 0         # Count 1   
+        self.i = 0         # Count 1   
 
 
         self.statePub = self.create_publisher(String, 'state', 10)
@@ -98,15 +99,15 @@ class peelerNode(Node):
         Publishes the peeler state to the 'state' topic. 
         '''
 
-        msg1 = String()
+        msg = String()
 
-        msg1.data = 'This is the state topic: %d' % self.i1
+        msg.data = 'This is the state topic: %d' % self.i
 
-        self.statePub.publish(msg1)
+        self.statePub.publish(msg)
 
         # self.get_logger().info('Publishing: "%s"' % msg1.data)
 
-        self.i1 += 1
+        self.i += 1
 
 
 
