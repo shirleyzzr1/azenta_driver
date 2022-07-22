@@ -57,7 +57,7 @@ class peelerNode(Node):
 
             response.description_response = self.peelerDescription
 
-            self.get_logger().info('Incoming request Good')
+            self.get_logger().info('Incoming  Good')
         
         else:
 
@@ -97,9 +97,13 @@ class peelerNode(Node):
         '''
 
         msg1 = String()
+
         msg1.data = 'This is the state topic: %d' % self.i1
+
         self.statePub.publish(msg1)
-        self.get_logger().info('Publishing: "%s"' % msg1.data)
+
+        # self.get_logger().info('Publishing: "%s"' % msg1.data)
+
         self.i1 += 1
 
 

@@ -22,6 +22,7 @@ setup(
     entry_points={
         'console_scripts': [
             'peelerNode = ros2_peeler_driver.peelerNode:main',
+            'cameraNode = ros2_peeler_driver.cameraNode:main',
         ],
     },
 )
