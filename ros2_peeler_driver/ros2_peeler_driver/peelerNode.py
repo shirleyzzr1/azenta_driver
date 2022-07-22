@@ -36,7 +36,7 @@ class peelerNode(Node):
         self.i1 = 0         # Count 1   
 
 
-        self.statePub = self.create_publisher(String, ' ', 10)
+        self.statePub = self.create_publisher(String, 'state', 10)
 
         self.stateTimer = self.create_timer(timer_period, self.stateCallback)
 
@@ -73,7 +73,7 @@ class peelerNode(Node):
         can preform.
         '''
 
-        self.manager_command = request.action # Run commands if manager sends corresponding command
+        self.manager_command = request.action_request # Run commands if manager sends corresponding command
 
         match self.manager_command:
             
@@ -82,10 +82,10 @@ class peelerNode(Node):
                 peeler.check_version()
                 peeler.reset()
 
-                response.success = True
+                response.action_response = True
             
             case other:
-                response.success = False
+                response.action_response = False
 
         return response
 
