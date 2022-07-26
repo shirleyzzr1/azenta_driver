@@ -4,45 +4,46 @@ import rclpy                 # import Rospy
 from rclpy.node import Node  # import Rospy Node
 from std_msgs.msg import String
 
-from services.srv import PeelerDescription
+from services.srv import PeelerDescription 
 from services.srv import PeelerActions
 
 
 from .drivers.peeler_client import BROOKS_PEELER_CLIENT # import peeler driver
 
-peeler = BROOKS_PEELER_CLIENT("/dev/ttyUSB0")           # port name for peeler
+PORT = "/dev/ttyUSB0"           # port name for peeler
+NAME ="Peeler_Node"
 
-class peelerNode(Node):
-
+class peelerNode(Node, PORT=PORT, NODE_NAME=NAME):
     '''
     The peelerNode inputs data from the 'action' topic, providing a set of commands for the driver to execute. It then receives feedback, 
     based on the executed command and publishes the state of the peeler and a description of the peeler to the respective topics.
     '''
 
     def __init__(self):
-
-
         '''
         The init function is neccesary for the peelerNode class to initialize all variables, parameters, and other functions.
         Inside the function the parameters exist, and calls to other functions and services are made so they can be executed in main.
         '''
 
-        super().__init__('Peeler_Node')
+        super().__init__(NODE_NAME)
         
         print("Wakey wakey eggs & bakey")
 
-        self.state = "READY"
+        self.peeler = BROOKS_PEELER_CLIENT(PORT)
+
+        self.state = "UNKNOWN"
 
         # Format:
         # [
         # [command, [peeler command 1, peeler command 2], [[paramater 1( peeler command 1), paramater 2( peeler command 1)], [""],[""]]
         # repeat
         # ]
+        
         self.peelerDescription = [
             ["prepare_peeler",["reset", "check_version", "check_status"], [[""],[""],[""]]],
             ["standard_peel", ["seal_check", "peel"], [[""],["loc", "time"]]],
             ["check_threshold", ["sensor_threshold"], [[""]]]
-        ]
+            ]
 
 
         timer_period = 0.5  # seconds
@@ -97,20 +98,20 @@ class peelerNode(Node):
         match self.manager_command:
             
             case "prepare_peeler":
-                peeler.reset()
-                peeler.check_version()
-                peeler.check_status()
+                self.peeler.reset()
+                self.peeler.check_version()
+                self.peeler.check_status()
 
                 response.action_response = True
             
             case "standard peel":
-                peeler.seal_check()
-                peeler.peel(1,2.5)
+                self.peeler.seal_check()
+                self.peeler.peel(1,2.5)
 
                 response.action_response = True
 
             case "check threshold":
-                peeler.sensor_threshold()
+                self.peeler.sensor_threshold()
 
                 response.action_response = True
                 
@@ -119,8 +120,8 @@ class peelerNode(Node):
         
         self.state = "COMPLETED"
 
-        if "Error:" in peeler.peeler_output:
-            self.state = peeler.error_msg
+        if "Error:" in self.peeler.peeler_output:
+            self.state = self.peeler.error_msg
         
         return response
 

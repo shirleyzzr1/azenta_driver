@@ -27,7 +27,7 @@ class masterNode(Node):
         
         print("Wakey wakey eggs & bakey")
 
-        self.descriptionSer = self.create_service(List, 'description', self.descriptionCallback, 10)
+        # self.descriptionSer = self.create_service(List, 'description', self.descriptionCallback, 10)
         
         self.stateSub = self.create_subscription(String, 'state', self.stateCallback, 10)
         
