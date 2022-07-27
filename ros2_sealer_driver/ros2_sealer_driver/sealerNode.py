@@ -121,6 +121,7 @@ class sealerNode(Node):
 
 
 
+
 def main(args = None):
 
     rclpy.init(args=args)  # initialize Ros2 communication

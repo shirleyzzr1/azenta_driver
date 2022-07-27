@@ -14,6 +14,7 @@ PORT = "/dev/ttyUSB0"           # port name for peeler
 NAME ="Peeler_Node"
 
 class peelerNode(Node, PORT=PORT, NODE_NAME=NAME):
+
     '''
     The peelerNode inputs data from the 'action' topic, providing a set of commands for the driver to execute. It then receives feedback, 
     based on the executed command and publishes the state of the peeler and a description of the peeler to the respective topics.
@@ -44,6 +45,7 @@ class peelerNode(Node, PORT=PORT, NODE_NAME=NAME):
             ["standard_peel", ["seal_check", "peel"], [[""],["loc", "time"]]],
             ["check_threshold", ["sensor_threshold"], [[""]]]
             ]
+
 
 
         timer_period = 0.5  # seconds
@@ -93,7 +95,6 @@ class peelerNode(Node, PORT=PORT, NODE_NAME=NAME):
         self.state = "BUSY"
 
         self.stateCallback()
-        
 
         match self.manager_command:
             
@@ -123,6 +124,7 @@ class peelerNode(Node, PORT=PORT, NODE_NAME=NAME):
         if "Error:" in self.peeler.peeler_output:
             self.state = self.peeler.error_msg
         
+
         return response
 
 
@@ -132,15 +134,13 @@ class peelerNode(Node, PORT=PORT, NODE_NAME=NAME):
         Publishes the peeler state to the 'state' topic. 
         '''
 
-        msg1 = String()
+        msg = String()
 
-        msg1.data = 'State: %s' % self.state
+        msg.data = 'State: %s' % self.state
 
-        self.statePub.publish(msg1)
+        self.statePub.publish(msg)
 
-        self.get_logger().info('Publishing: "%s"' % msg1.data)
-
-        self.i += 1
+        self.get_logger().info('Publishing: "%s"' % msg.data)
         
         self.state = "READY"
 

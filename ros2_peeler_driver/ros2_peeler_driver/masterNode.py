@@ -29,6 +29,7 @@ class masterNode(Node):
 
         # self.descriptionSer = self.create_service(List, 'description', self.descriptionCallback, 10)
         
+
         self.stateSub = self.create_subscription(String, 'state', self.stateCallback, 10)
         
         self.stateSub # prevent unused variable warning
@@ -90,6 +91,7 @@ class masterNode(Node):
 
 
         response.success = True
+
 
     def stateCallback(self, msg):
 
