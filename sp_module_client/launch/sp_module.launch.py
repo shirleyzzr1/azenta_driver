@@ -5,22 +5,29 @@ def generate_launch_description():
     return LaunchDescription([
 
         Node(
-            package='ros2_peeler_driver',
-            namespace='peeler',
+            package='sp_module_client',
+            namespace='sp_module',
             executable='peelerNode',
             name='peelerNode'
         ),
 
         Node(
-            package='ros2_peeler_driver',
-            namespace='master',
+            package='sp_module_client',
+            namespace='sp_module',
+            executable='sealerNode',
+            name='sealerNode'
+        ),
+
+        Node(
+            package='sp_module_client',
+            namespace='sp_module',
             executable='masterNode',
             name='masterNode'
         ),
 
         Node(
-            package='ros2_peeler_driver',
-            namespace='camera',
+            package='sp_module_client',
+            namespace='sp_module',
             executable='cameraNode',
             name='cameraNode'
         ),

@@ -4,11 +4,11 @@ import rclpy                 # import Rospy
 from rclpy.node import Node  # import Rospy Node
 from std_msgs.msg import String
 
-from azenta_services.srv import PeelerDescription 
-from azenta_services.srv import PeelerActions
+from sp_module_services.srv import PeelerDescription 
+from sp_module_services.srv import PeelerActions
 
 
-from .drivers.peeler_client import BROOKS_PEELER_CLIENT # import peeler driver
+from azenta_drivers.peeler_client import BROOKS_PEELER_CLIENT # import peeler driver
 
 
 
