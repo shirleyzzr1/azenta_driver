@@ -4,23 +4,20 @@ import rclpy                 # import Rospy
 from rclpy.node import Node  # import Rospy Node
 from std_msgs.msg import String
 
-from services.srv import PeelerDescription 
-from services.srv import PeelerActions
+from azenta_services.srv import PeelerDescription 
+from azenta_services.srv import PeelerActions
 
 
 from .drivers.peeler_client import BROOKS_PEELER_CLIENT # import peeler driver
 
-PORT = "/dev/ttyUSB0"           # port name for peeler
-NAME ="Peeler_Node"
 
-class peelerNode(Node, PORT=PORT, NODE_NAME=NAME):
 
+class peelerNode(Node):
     '''
     The peelerNode inputs data from the 'action' topic, providing a set of commands for the driver to execute. It then receives feedback, 
     based on the executed command and publishes the state of the peeler and a description of the peeler to the respective topics.
     '''
-
-    def __init__(self):
+    def __init__(self, PORT="/dev/ttyUSB0" , NODE_NAME="Peeler_Node"):
         '''
         The init function is neccesary for the peelerNode class to initialize all variables, parameters, and other functions.
         Inside the function the parameters exist, and calls to other functions and services are made so they can be executed in main.
@@ -28,7 +25,7 @@ class peelerNode(Node, PORT=PORT, NODE_NAME=NAME):
 
         super().__init__(NODE_NAME)
         
-        print("Wakey wakey eggs & bakey")
+        print("Wakey wakey eggs & bakey") 
 
         self.peeler = BROOKS_PEELER_CLIENT(PORT)
 
@@ -49,8 +46,6 @@ class peelerNode(Node, PORT=PORT, NODE_NAME=NAME):
 
 
         timer_period = 0.5  # seconds
-
-        self.i = 0         # Count 1   
 
 
         self.statePub = self.create_publisher(String, 'state', 10)
@@ -148,9 +143,12 @@ class peelerNode(Node, PORT=PORT, NODE_NAME=NAME):
 
 def main(args = None):
 
+    PORT = "/dev/ttyUSB0"           # port name for peeler
+    NAME = "Peeler_Node"
+
     rclpy.init(args=args)  # initialize Ros2 communication
 
-    node = peelerNode()
+    node = peelerNode(PORT=PORT, NODE_NAME=NAME)
 
     rclpy.spin(node)     # keep Ros2 communication open for action node
 
