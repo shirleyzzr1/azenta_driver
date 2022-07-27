@@ -4,15 +4,16 @@ import rclpy                 # import Rospy
 from rclpy.node import Node  # import Rospy Node
 from std_msgs.msg import String
 
-from services.srv import PeelerDescription
+from services.srv import PeelerDescription 
 from services.srv import PeelerActions
 
 
 from .drivers.peeler_client import BROOKS_PEELER_CLIENT # import peeler driver
 
-peeler = BROOKS_PEELER_CLIENT("/dev/ttyUSB0")           # port name for peeler
+PORT = "/dev/ttyUSB0"           # port name for peeler
+NAME ="Peeler_Node"
 
-class peelerNode(Node):
+class peelerNode(Node, PORT=PORT, NODE_NAME=NAME):
 
     '''
     The peelerNode inputs data from the 'action' topic, providing a set of commands for the driver to execute. It then receives feedback, 
@@ -20,18 +21,31 @@ class peelerNode(Node):
     '''
 
     def __init__(self):
-
-
         '''
         The init function is neccesary for the peelerNode class to initialize all variables, parameters, and other functions.
         Inside the function the parameters exist, and calls to other functions and services are made so they can be executed in main.
         '''
 
-        super().__init__('Peeler_Node')
+        super().__init__(NODE_NAME)
         
         print("Wakey wakey eggs & bakey")
 
-        self.peelerDescription = [ ]
+        self.peeler = BROOKS_PEELER_CLIENT(PORT)
+
+        self.state = "UNKNOWN"
+
+        # Format:
+        # [
+        # [command, [peeler command 1, peeler command 2], [[paramater 1( peeler command 1), paramater 2( peeler command 1)], [""],[""]]
+        # repeat
+        # ]
+        
+        self.peelerDescription = [
+            ["prepare_peeler",["reset", "check_version", "check_status"], [[""],[""],[""]]],
+            ["standard_peel", ["seal_check", "peel"], [[""],["loc", "time"]]],
+            ["check_threshold", ["sensor_threshold"], [[""]]]
+            ]
+
 
 
         timer_period = 0.5  # seconds
@@ -75,20 +89,41 @@ class peelerNode(Node):
         The actionCallback function is a service that can be called to execute the available actions the robot
         can preform.
         '''
-
+        
         self.manager_command = request.action_request # Run commands if manager sends corresponding command
+        
+        self.state = "BUSY"
+
+        self.stateCallback()
 
         match self.manager_command:
             
-            case "test_command":
-                peeler.check_status()
-                peeler.check_version()
-                peeler.reset()
+            case "prepare_peeler":
+                self.peeler.reset()
+                self.peeler.check_version()
+                self.peeler.check_status()
 
                 response.action_response = True
             
+            case "standard peel":
+                self.peeler.seal_check()
+                self.peeler.peel(1,2.5)
+
+                response.action_response = True
+
+            case "check threshold":
+                self.peeler.sensor_threshold()
+
+                response.action_response = True
+                
             case other:
-                response.action_response = False
+                response.action_response= False
+        
+        self.state = "COMPLETED"
+
+        if "Error:" in self.peeler.peeler_output:
+            self.state = self.peeler.error_msg
+        
 
         return response
 
@@ -101,13 +136,13 @@ class peelerNode(Node):
 
         msg = String()
 
-        msg.data = 'This is the state topic: %d' % self.i
+        msg.data = 'State: %s' % self.state
 
         self.statePub.publish(msg)
 
-        # self.get_logger().info('Publishing: "%s"' % msg1.data)
-
-        self.i += 1
+        self.get_logger().info('Publishing: "%s"' % msg.data)
+        
+        self.state = "READY"
 
 
 

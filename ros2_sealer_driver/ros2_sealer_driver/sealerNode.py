@@ -19,7 +19,20 @@ class sealerNode(Node):
         
         super().__init__('Sealer_Node')
 
+        print("Wakey wakey eggs & bakey")
+
+        self.state = "READY"
+
         timer_period = 0.5  # seconds
+
+        # Format:
+        # [
+        # [ command, [sealer command 1, sealer command 2]]
+        # ]
+
+        self.sealerDescription = [
+            ["prepare sealer", ["set_time", "set_temp", "reset"]]                       
+        ]
 
         self.i1 = 0         # Count 1 
 
@@ -44,52 +57,68 @@ class sealerNode(Node):
         self.descriptionTimer = self.create_timer(timer_period, self.descriptionCallback)
 
 
-    def actionCallback(self, msg):
+    def descriptionCallback(self, request, response):
+
+        '''
+        The descriptionCallback function is a service that can be called to showcase the available actions a robot
+        can preform as well as deliver essential information required by the master node.
+        '''
+      
+        if request.description_request == 'Sealer': 
+
+            response.description_response = self.sealerDescription
+
+            self.get_logger().info('Incoming  Good')
+        
+        else:
+
+            response.description_response = 'Sealer Description Failed'
+
+        return response
+
+
+    def actionCallback(self, request, response):
 
         '''
         Stores the data received from the 'action' topic.
         '''
 
-        self.get_logger().info('I am the action topic "%s"' % msg.data)
+        self.manager_command = "prepare sealer" #request.action # Run commands if manager sends corresponding command
+
+        self.state = "BUSY"
+
+        match self.manager_command:
+
+            case "prepare sealer":
+                sealer.set_time()
+                sealer.set_temp()
+                sealer.reset()
+
+                response.action_response = True
+
+            case other:
+                response.action_response = False
+        
+        self.state = "COMPLETED"
 
 
     def stateCallback(self):
         '''
         Publishes the sealer state to the 'state' topic.
         '''
+
         msg1 = String()
-        msg1.data = 'This is the state topic: %d' % self.i1
+
+        msg1.data = 'State %s' % self.state
+
         self.statePub.publish(msg1)
+
         self.get_logger().info('Publishing: "%s"' % msg1.data)
+
         self.i1 += 1
 
-    def descriptionCallback(self):
-        '''
-        Publishes the sealer description to the 'description' topic.
-        '''
+        self.state = "READY"
 
-        msg2 = String()
-        msg2.data = 'This is the description topic %d' % self.i2
-        self.descriptionPub.publish(msg2)
-        self.get_logger().info('Publishing: "%s"' % msg2.data)
-        self.i2 += 1
-
-        
-    def driverCommunication(self):
-
-        '''
-        Matches action received from action subscriber to sealer actions,
-        and makes driver execute the command required to complete the action.
-        '''
-
-        self.manager_command = "test_command"  # Run commands if manager sends corresponding command
-
-
-        match self.manager_command:
-            
-            case "test_command":
-                sealer.reset()
-    
 
 
 

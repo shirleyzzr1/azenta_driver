@@ -26,6 +26,7 @@ class BROOKS_PEELER_CLIENT():
         # self.version = self.check_version()
         self.tape_remaining_var = 0
         self.sensor_threshold_var = 0
+        self.error_msg = ""
         
 
 
@@ -129,6 +130,9 @@ class BROOKS_PEELER_CLIENT():
             error_code_msg = error_dict[first_error]+ "\n" + error_dict[second_error] + "\n" + error_dict[third_error]
 
         self.peeler_output = self.peeler_output + error_code_msg + '\n'
+        
+        if "Error:" in error_code_msg:
+            self.error_msg = self.error_msg + error_code_msg + '\n'
 
 
     def check_status(self):
@@ -364,7 +368,4 @@ if __name__ == "__main__":
     '''
 
     dummy_peel = BROOKS_PEELER_CLIENT("/dev/ttyUSB0")
-    dummy_peel.check_status()
-    # for i in range(5):
-    #     print('\n')
-    print(dummy_peel.peeler_output)
+
