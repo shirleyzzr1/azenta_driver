@@ -9,33 +9,45 @@ import re
 
 
 class BROOKS_PEELER_CLIENT():
-    """
+    '''
     Description: 
-                 - Python interface that allows remote commands to be executed using simple string messages to XPeel. 
-    Serial Communication Messages from the Robot:
-                 - Responses from XPeel are displayed in the terminal.
-    """
-    def __init__(self, host_path, baud_rate=9600):
+    Python interface that allows remote commands to be executed to the Peeler. 
+    '''
 
+    def __init__(self, host_path, baud_rate=9600):
+        '''
+        This function initializes the data to be called and modified in other locations in the client.
+        '''
+        
         self.host_path = host_path
         self.baud_rate = baud_rate
+        self.peeler_output = ""
         self.status_var = ""
-        self.version = self.check_version()
+        # self.version = self.check_version()
         self.tape_remaining_var = 0
         self.sensor_threshold_var = 0
+        self.error_msg = ""
+        
 
 
     def connect_peeler(self):
-        #Connect to serial port / If wrong port entered inform user 
+        '''
+        Connect to serial port / If wrong port entered inform user 
+        '''
+
         try:
             ser = serial.Serial(self.host_path, self.baud_rate)
         except:
-            print("Wrong port entered")
+            self.peeler_output = self.peeler_output + "Wrong port entered" + '\n'
             pass
         return ser
 
 
     def response_fun(self, time_wait):                         
+        '''
+        Records the data outputted by the Peeler and sets it to equal "" if no data is outputted in the provided time.
+        '''
+
         ser = self.connect_peeler()
         response_timer = time.time()
         while time.time() - response_timer < time_wait: 
@@ -49,25 +61,32 @@ class BROOKS_PEELER_CLIENT():
     
 
     def send_command(self, command, success_msg, err_msg, timeout=1):
+        '''
+        Sends provided command to Peeler and stores data outputted by the peelr.
+        Indicates when the confirmation that the Peeler received the command by displaying 'ACK TRUE.' 
+        '''
 
-        print('COMMAND: ' + command)
-        #check if connected / if not (error? / reconnect?)
+        self.peeler_output = self.peeler_output+ 'Command: ' + command + "\n"
+        
         ser = self.connect_peeler()        
         ser.write(command.encode('utf-8'))        
 
-        #Declares success/error messsage if none are given
         ready_timer = time.time()
         response_buffer = ""
 
+        # Waits till there is "ready" in the response_buffer indicating
+        # the command is done executing.
         while "ready" not in response_buffer:
             new_string = self.response_fun(timeout)
 
             if new_string != "":
-                print(new_string)
+                self.peeler_output = self.peeler_output + new_string + '\n'
 
             response_buffer = response_buffer + new_string
+            
+            # Indicates that command was received
             if "ack" in new_string:
-                print('ACK TRUE')
+                self.peeler_output = self.peeler_output + 'ACK TRUE' + '\n'
 
             if time.time() - ready_timer > 20:
                 break
@@ -77,6 +96,10 @@ class BROOKS_PEELER_CLIENT():
         return response_buffer
 
     def error(self, response_buffer):        
+        '''
+        Decodes the error message outputted by the peeler.
+        '''
+        
         error_dict = {
             "00" : "",
             "01" : "Error: Conveyor motor stalled",
@@ -106,10 +129,17 @@ class BROOKS_PEELER_CLIENT():
         else:
             error_code_msg = error_dict[first_error]+ "\n" + error_dict[second_error] + "\n" + error_dict[third_error]
 
-        print(error_code_msg)
+        self.peeler_output = self.peeler_output + error_code_msg + '\n'
+        
+        if "Error:" in error_code_msg:
+            self.error_msg = self.error_msg + error_code_msg + '\n'
 
 
     def check_status(self):
+        '''
+        Checks if there are currently any errors.
+        '''
+        
         cmd_string = '*stat\r\n'
         success_msg = "Displaying status:"
         err_msg = "Displaying status:"
@@ -118,6 +148,10 @@ class BROOKS_PEELER_CLIENT():
 
     
     def check_version(self):
+        '''
+        Checks firmware version number.
+        '''
+        
         cmd_string = '*version\r\n'
         success_msg = "XPeel Firmware Version:"
         err_msg = "Failed to display XPeel firmware version"
@@ -129,11 +163,15 @@ class BROOKS_PEELER_CLIENT():
 
         version = matches_ver[1]
 
-        print('Version = ' + version)
+        self.peeler_output = self.peeler_output + 'Version = ' + version + '\n'
         return version
 
 
     def reset(self):
+        '''
+        Returns elevator and conveyor to home location and gets fresh tape in place to use.
+        '''
+        
         cmd_string = '*reset\r\n'
         success_msg = "Successful reset"
         err_msg = "Failed to reset"
@@ -141,6 +179,10 @@ class BROOKS_PEELER_CLIENT():
 
 
     def restart(self):
+        '''
+        Turns Peeler power off and on.
+        '''
+        
         cmd_string = '*restart\r\n'
         success_msg = "Successful restart"
         err_msg = "Failed to restart"
@@ -148,6 +190,10 @@ class BROOKS_PEELER_CLIENT():
 
 
     def peel(self, param_set_num, param_time):
+        '''
+        Removes seal based on the paramaters given for the location to start peeling, the speed, and adhere time.
+        '''
+        
         peel_dict = {
             1: ["default -2 mm", "fast"],
             2: ["default -2 mm", "slow"],
@@ -166,6 +212,10 @@ class BROOKS_PEELER_CLIENT():
 
 
     def seal_check(self):
+        '''
+        Checks if there is any seal on the plate.
+        '''
+
         cmd_string = '*sealcheck\r\n'
         success_msg = "Successful seal check"
         err_msg = "Failed to conduct seal check"
@@ -173,6 +223,10 @@ class BROOKS_PEELER_CLIENT():
     
 
     def tape_remaining(self):
+        '''
+        Checks how much tape is left on the supply spool and take-up spool in deseals.
+        '''
+        
         cmd_string = '*tapeleft\r\n'
         success_msg = " deseals remaining on supply spool \n deseals remaining on take-up spool"
         err_msg = "Failed to find amount of tape remaining"
@@ -182,12 +236,15 @@ class BROOKS_PEELER_CLIENT():
 
         deseals_supply = int(matches[1])*10
         deseals_take = int(matches[2]) *10
-        print("Deseals on supply spool: " + str(deseals_supply))
-        print("Deseals on take-up spool: "+ str(deseals_take))
+        self.peeler_output = self.peeler_output + "Deseals on supply spool: " + str(deseals_supply) + '\n'
+        self.peeler_output = self.peeler_output + "Deseals on take-up spool: "+ str(deseals_take) + '\n'
         return deseals_supply, deseals_take
 
 
     def plate_check(self, pc_yn = ""):
+        '''
+        If plate check set to yes, the XPeel process is prevented from taking place if there is no plate detected on the plate tray.
+        '''
         #pc_yn = y for yes n for no
         pc_yn = input("Set platecheck to yes (y) or no (n): ")
         cmd_string = '*platecheck:%s\r\n'%(pc_yn)
@@ -201,6 +258,10 @@ class BROOKS_PEELER_CLIENT():
 
 
     def sensor_threshold(self, threshold_value = "Not Found"):
+        '''
+        Displays sensor threshold value to ensure that the seal has been removed.
+        '''
+
         cmd_string = '*sealstat\r\n'
         success_msg = "Threshold value of %s for the seal detected sensor" %(threshold_value)
         err_msg = "Failed to get threshold value"
@@ -209,12 +270,16 @@ class BROOKS_PEELER_CLIENT():
         matches = re.search(r"\*seal:(\d+)",response)
 
         threshold_value = matches[1]
-        
-        print("Threshold Value: " + threshold_value)
+
+        self.peeler_output = self.peeler_output + "Threshold Value: " + threshold_value + '\n'
         return threshold_value
 
 
     def sensor_threshold_higher(self, seal_higher_input = "", threshold_value_high = "Not Found"):
+        '''
+        Sets the seal detected threshold value for the seal present if higher than threshold.
+        '''
+
         seal_higher_input = input("3 digit threshold value: ")
         cmd_string = '*sealhigher:%s\r\n'%(seal_higher_input)
         success_msg = "Threshold value of %s for the seal detected sensor" %(threshold_value_high)
@@ -225,10 +290,15 @@ class BROOKS_PEELER_CLIENT():
 
         threshold_value_high = matches[1]
 
-        print("Threshold Value: " + threshold_value_high)
+
+        self.peeler_output = self.peeler_output + "Threshold Value: " + threshold_value_high + '\n'
 
 
     def sensor_threshold_lower(self, seal_lower_input = "", threshold_value_low = "Not Found"):
+        '''
+        Sets the seal detected threshold value for the seal present if lower than threshold.
+        '''
+
         seal_lower_input = input("3 digit threshold value: ")
         cmd_string = '*seallower:%s\r\n' %(seal_lower_input)
         success_msg = "Threshold value of %s for the seal detected sensor" %(threshold_value_low)
@@ -239,33 +309,51 @@ class BROOKS_PEELER_CLIENT():
 
         threshold_value_low = matches[1]
 
-        print("Threshold Value: " + threshold_value_low)
+        self.peeler_output = self.peeler_output + "Threshold Value: " + threshold_value_low + '\n'
 
     def conveyor_out(self):
+        '''
+        Moves the conveyor out.
+        '''
+        
         cmd_string = '*moveout\r\n'
         success_msg = "Successfully moved conveyor out"
         err_msg = "Failed to move conveyor out"
         self.send_command(cmd_string, success_msg, err_msg) 
 
     def conveyor_in(self):
+        '''
+        Moves conveyor in.
+        '''
+
         cmd_string = '*movein\r\n'
         success_msg = "Successfully moved conveyor in"
         err_msg = "Failed to move conveyor in"
         self.send_command(cmd_string, success_msg, err_msg) 
 
     def elevator_down(self):
+        '''
+        Moves elevator down.
+        '''
+       
         cmd_string = '*movedown\r\n'
         success_msg = "Successfully moved elevator down"
         err_msg = "Failed to move elevator down"
         self.send_command(cmd_string, success_msg, err_msg) 
 
     def elevator_up(self):
+        '''
+        Moves elevator up.
+        '''
+
         cmd_string = '*moveup\r\n'
         success_msg = "Successfully moved elevator up"
         err_msg = "Failed to move elevator up"
         self.send_command(cmd_string, success_msg, err_msg) 
 
     def move_spool(self):
+        "Advances the spool 10 mm of tape"
+
         cmd_string = '*movespool\r\n'
         success_msg = "Successfully moved spool 10 mm"
         err_msg = "Failed to move spool 10 mm"
@@ -275,6 +363,9 @@ class BROOKS_PEELER_CLIENT():
 
 
 if __name__ == "__main__":
+    '''
+    Runs given function.
+    '''
 
     dummy_peel = BROOKS_PEELER_CLIENT("/dev/ttyUSB0")
-    dummy_peel.check_status()
+

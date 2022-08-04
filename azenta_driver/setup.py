@@ -28,7 +28,7 @@ setup(
     python_requires=">=3.8",
     maintainer='Rafael Vescovi and Doga Ozgulbas',
     maintainer_email='dozgulbas@anl.gov',
-    description='Driver for the Azentar Sealer and Peeler',
+    description='Driver for the Azenta Sealer and Peeler',
     url='https://github.com/AD-SDL/azenta_driver.git', 
     license='MIT License',
     entry_points={},
