@@ -8,7 +8,7 @@ from sp_module_services.srv import PeelerDescription
 from sp_module_services.srv import PeelerActions
 
 
-from azenta_drivers.peeler_client import BROOKS_PEELER_CLIENT # import peeler driver
+from azenta_driver.peeler_client import BROOKS_PEELER_CLIENT # import peeler driver
 
 
 
@@ -25,7 +25,6 @@ class peelerNode(Node):
 
         super().__init__(NODE_NAME)
         
-        print("Wakey wakey eggs & bakey") 
 
         self.peeler = BROOKS_PEELER_CLIENT(PORT)
 
