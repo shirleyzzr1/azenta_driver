@@ -28,6 +28,9 @@ class peelerNode(Node):
 
         self.peeler = BROOKS_PEELER_CLIENT(PORT)
 
+        print("peeler is online") 
+
+
         self.state = "UNKNOWN"
 
         # Format:
@@ -43,7 +46,6 @@ class peelerNode(Node):
             ]
 
 
-
         timer_period = 0.5  # seconds
 
 
@@ -51,14 +53,12 @@ class peelerNode(Node):
 
         self.stateTimer = self.create_timer(timer_period, self.stateCallback)
 
-
         self.actionSrv = self.create_service(PeelerActions, "peeler_actions", self.actionCallback)
 
         self.descriptionSrv = self.create_service(PeelerDescription, "peeler_description", self.descriptionCallback)
 
 
     def descriptionCallback(self, request, response):
-
         '''
         The descriptionCallback function is a service that can be called to showcase the available actions a robot
         can preform as well as deliver essential information required by the master node.
@@ -78,7 +78,6 @@ class peelerNode(Node):
 
 
     def actionCallback(self, request, response):
-
         '''
         The actionCallback function is a service that can be called to execute the available actions the robot
         can preform.
@@ -99,13 +98,13 @@ class peelerNode(Node):
 
                 response.action_response = True
             
-            case "standard peel":
+            case "standard_peel":
                 self.peeler.seal_check()
                 self.peeler.peel(1,2.5)
 
                 response.action_response = True
 
-            case "check threshold":
+            case "check_threshold":
                 self.peeler.sensor_threshold()
 
                 response.action_response = True
@@ -123,7 +122,6 @@ class peelerNode(Node):
 
 
     def stateCallback(self):
-
         '''
         Publishes the peeler state to the 'state' topic. 
         '''

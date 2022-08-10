@@ -19,7 +19,7 @@ class sealerNode(Node):
         
         super().__init__('Sealer_Node')
 
-        print("Wakey wakey eggs & bakey")
+        print("Sealer is online")
 
         self.state = "READY"
 
