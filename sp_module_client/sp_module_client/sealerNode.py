@@ -4,7 +4,7 @@ import rclpy                 # import Rospy
 from rclpy.node import Node  # import Rospy Node
 from std_msgs.msg import String
 
-from azenta_drivers.sealer_client import A4S_SEALER_CLIENT # import sealer driver
+from azenta_driver.sealer_client import A4S_SEALER_CLIENT # import sealer driver
 
 sealer = A4S_SEALER_CLIENT("/dev/ttyUSB0")           # port name for sealer
 
@@ -19,7 +19,7 @@ class sealerNode(Node):
         
         super().__init__('Sealer_Node')
 
-        print("Wakey wakey eggs & bakey")
+        print("Sealer is online")
 
         self.state = "READY"
 
