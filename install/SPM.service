@@ -1,0 +1,14 @@
+[Unit]
+Description="Sealer Pealer Module Daemon"
+
+[Service]
+Environment="LD_LIBRARY_PATH=/opt/spm_module/install/lib:/opt/ros/humble/lib"
+Environment="PYTHONPATH=/opt/spm_module/install/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages/"
+Environment="AMENT_PREFIX_PATH=/opt/spm_module/install:/opt/ros/humble"
+
+ExecStart=/opt/ros/humble/bin/ros2 run sp_module_client peelerNode
+
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
