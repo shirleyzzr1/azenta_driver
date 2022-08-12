@@ -36,7 +36,6 @@ class A4S_SEALER_CLIENT():
         except:
             print("Wrong port entered")
             pass
-        #ser = serial.Serial(self.host_path, self.baud_rate)
         return ser
 
     def send_command(self, command, success_msg ="", err_msg = ""):
@@ -45,8 +44,8 @@ class A4S_SEALER_CLIENT():
         Resets sealer before sending given command. 
         '''
 
-        ser = self.connect_peeler()
-        ser.write(command.encode('*00SR=zz!'))
+        ser = self.connect_sealer()
+#        ser.write(command.encode('*00SR=zz!'))
         ser.write(command.encode('utf-8')) 
      
 
@@ -83,7 +82,7 @@ class A4S_SEALER_CLIENT():
         err_msg = "Failed to Close Gate"          
         self.send_command(cmd_string, success_msg, err_msg)
 
-    def set_temp(self, temp=100):
+    def set_temp(self, temp=175):
         '''
         Adjusts seal to given temperature.
         '''
@@ -93,7 +92,7 @@ class A4S_SEALER_CLIENT():
         err_msg = "Failed to Set Temp. to 100°C"          
         self.send_command(cmd_string, success_msg, err_msg)
        
-    def set_time(self, time=0.5):
+    def set_time(self, time=3.0):
         '''
         Adjusts seal time to given time.
         '''

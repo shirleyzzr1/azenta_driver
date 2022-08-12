@@ -34,7 +34,7 @@ class sealerNode(Node):
         # [ command, [sealer command 1, sealer command 2]]
         # ]
 
-        self.sealerDescription = [["prepare sealer", ["set_time", "set_temp", "reset"]]]
+        self.sealerDescription = [["prepare_sealer", ["set_time", "set_temp", "reset"]]]
 
         self.i1 = 0  # Count 1
 
@@ -105,14 +105,14 @@ class sealerNode(Node):
         -------
         None
         """
-        self.manager_command = "prepare sealer"  # request.action # Run commands if manager sends corresponding command
+        self.manager_command = "prepare_sealer"  # request.action # Run commands if manager sends corresponding command
 
         self.state = "BUSY"
 
         if "prepare_sealer" in self.manager_command:
             sealer.set_time()
             sealer.set_temp()
-            sealer.reset()
+            # sealer.reset()
 
             response.action_response = True
         else:
