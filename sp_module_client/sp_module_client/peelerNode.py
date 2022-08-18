@@ -16,7 +16,7 @@ class peelerNode(Node):
     based on the executed command and publishes the state of the peeler and a description of the peeler to the respective topics.
     """
 
-    def __init__(self, PORT="/dev/ttyUSB0", NODE_NAME="Peeler_Node"):
+    def __init__(self, PORT="/dev/ttyUSB1", NODE_NAME="peelerNode"):
         """
         The init function is neccesary for the peelerNode class to initialize all variables, parameters, and other functions.
         Inside the function the parameters exist, and calls to other functions and services are made so they can be executed in main.
@@ -25,42 +25,27 @@ class peelerNode(Node):
         super().__init__(NODE_NAME)
 
         self.peeler = BROOKS_PEELER_CLIENT(PORT)
+        print("Peeler is online")                   # Wakeup Message
+        self.state = "UNKNOWN" 
 
-        print("peeler is online")
-
-        self.state = "UNKNOWN"
-
-        # Format:
-        # [
-        # [command, [peeler command 1, peeler command 2], [[paramater 1( peeler command 1), paramater 2( peeler command 1)], [""],[""]]
-        # repeat
-        # ]
-
-        self.peelerDescription = [
-            [
-                "prepare_peeler",
-                ["reset", "check_version", "check_status"],
-                [[""], [""], [""]],
-            ],
-            ["standard_peel", ["seal_check", "peel"], [[""], ["loc", "time"]]],
-            ["check_threshold", ["sensor_threshold"], [[""]]],
-        ]
+        self.description = {
+            'name': NODE_NAME,
+            'type':'',
+            'actions':
+            {
+                'peel':'%d %d'
+            }
+            }
 
         timer_period = 0.5  # seconds
+        self.statePub = self.create_publisher(String, "peeler_state", 10)       # Publisher for peeler state
+        self.stateTimer = self.create_timer(timer_period, self.stateCallback)   # Callback that publishes to peeler state
 
-        self.statePub = self.create_publisher(String, "state", 10)
+        self.actionSrv = self.create_service(PeelerActions, NODE_NAME + "/actions", self.actionCallback)
 
-        self.stateTimer = self.create_timer(timer_period, self.stateCallback)
+        self.descriptionSrv = self.create_service(PeelerDescription, NODE_NAME + "/description", self.descriptionCallback)
 
-        self.actionSrv = self.create_service(
-            PeelerActions, "peeler_actions", self.actionCallback
-        )
-
-        self.descriptionSrv = self.create_service(
-            PeelerDescription, "peeler_description", self.descriptionCallback
-        )
-
-    def descriptionCallback(self, request: str, response: Tuple[str, List]):
+    def descriptionCallback(self, request, response):
         """The descriptionCallback function is a service that can be called to showcase the available actions a robot
         can preform as well as deliver essential information required by the master node.
 
@@ -76,18 +61,11 @@ class peelerNode(Node):
         Tuple[str, List]
             The robot steps it can do
         """
-        if request.description_request == "Peeler":
-
-            response.description_response = self.peelerDescription
-
-            self.get_logger().info("Incoming  Good")
-
-        else:
-
-            response.description_response = "Peeler Description Failed"
+        response.description_response = str(self.description)
 
         return response
-
+        
+        
     def actionCallback(self, request, response):
         """The actions the robot can perform, also performs them
 
@@ -103,22 +81,18 @@ class peelerNode(Node):
         None
         """
 
-        self.manager_command = (
-            request.action_request
-        )  # Run commands if manager sends corresponding command
-
+        self.manager_command = request.action_request  # Run commands if manager sends corresponding command
         self.state = "BUSY"
-
         self.stateCallback()
 
-        if "prepare_peeler" in self.manager_command:
+        if "status" in self.manager_command:
             self.peeler.reset()
             self.peeler.check_version()
             self.peeler.check_status()
 
             response.action_response = True
 
-        elif "standard_peel" in self.manager_command:
+        elif "peel" in self.manager_command:
             self.peeler.seal_check()
             self.peeler.peel(1, 2.5)
 
@@ -155,16 +129,16 @@ class peelerNode(Node):
 
 def main(args=None):  # noqa: D103
 
-    PORT = "/dev/ttyUSB0"  # port name for peeler
-    NAME = "Peeler_Node"
+    PORT = "/dev/ttyUSB1"       # Port name for peeler
+    NODE_NAME = "peelerNode"   # Node name for peeler   
 
-    rclpy.init(args=args)  # initialize Ros2 communication
+    rclpy.init(args=args)       # initialize Ros2 communication
 
-    node = peelerNode(PORT=PORT, NODE_NAME=NAME)
+    node = peelerNode(PORT=PORT, NODE_NAME=NODE_NAME)
 
-    rclpy.spin(node)  # keep Ros2 communication open for action node
+    rclpy.spin(node)            # keep Ros2 communication open for action node
 
-    rclpy.shutdown()  # kill Ros2 communication
+    rclpy.shutdown()            # kill Ros2 communication
 
 
 if __name__ == "__main__":

@@ -21,13 +21,6 @@ def generate_launch_description():
         Node(
             package='sp_module_client',
             namespace='sp_module',
-            executable='masterNode',
-            name='masterNode'
-        ),
-
-        Node(
-            package='sp_module_client',
-            namespace='sp_module',
             executable='cameraNode',
             name='cameraNode'
         ),

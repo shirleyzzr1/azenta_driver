@@ -1,15 +1,13 @@
 #! /usr/bin/env python3
-"""Peeler Node"""
+"""Sealer Node"""
 
 from typing import List, Tuple
 
 import rclpy  # import Rospy
 from azenta_driver.sealer_client import A4S_SEALER_CLIENT  # import sealer driver
 from rclpy.node import Node  # import Rospy Node
+from sp_module_services.srv import PeelerActions, PeelerDescription
 from std_msgs.msg import String
-
-sealer = A4S_SEALER_CLIENT("/dev/ttyUSB0")  # port name for sealer
-
 
 class sealerNode(Node):
 
@@ -18,50 +16,34 @@ class sealerNode(Node):
     Inside the function the parameters exist, and calls to other functions and services are made so they can be executed in main.
     """
 
-    def __init__(self):
+    def __init__(self, PORT = "/dev/ttyUSB0", NODE_NAME = "Sealer_Node"):
         """Setup sealer node"""
 
-        super().__init__("Sealer_Node")
+        super().__init__(NODE_NAME)
 
-        print("Sealer is online")
+        self.sealer = A4S_SEALER_CLIENT(PORT)
+        print("Sealer is online")               # Wakeup Message
+        self.state = "UNKOWN"
 
-        self.state = "READY"
+        self.description = {
+            'name': NODE_NAME,
+            'type':'',
+            'actions':
+            {
+                'prepare_sealer':'%d %d'
+            }
+            }
 
         timer_period = 0.5  # seconds
+        self.statePub = self.create_publisher(String, "sealer_state", 10)       # Publisher for sealer state
+        self.stateTimer = self.create_timer(timer_period, self.stateCallback)   # Callback that publishes to sealer state
 
-        # Format:
-        # [
-        # [ command, [sealer command 1, sealer command 2]]
-        # ]
+        self.actionSrv = self.create_service(PeelerActions, NODE_NAME + "/actions", self.actionCallback)
 
-        self.sealerDescription = [["prepare_sealer", ["set_time", "set_temp", "reset"]]]
+        self.descriptionSrv = self.create_service(PeelerDescription, NODE_NAME + "/description", self.descriptionCallback)
 
-        self.i1 = 0  # Count 1
 
-        self.i2 = 0  # Count 2
-
-        self.actionSub = self.create_subscription(
-            String, "action", self.actionCallback, 10
-        )
-
-        self.actionSub  # prevent unused variable warning
-
-        self.statePub = self.create_publisher(String, "state", 10)
-
-        self.stateTimer = self.create_timer(timer_period, self.stateCallback)
-
-        # self.stateOutput = self.create_timer(timer_period, self.driverCommunication)      Publishing sealer output
-
-        self.descriptionPub = self.create_publisher(String, "description", 10)
-
-        self.descriptionTimer = self.create_timer(
-            timer_period, self.descriptionCallback
-        )
-
-    def descriptionCallback(
-        self, request: str, response: Tuple[str, List]
-    ) -> Tuple[str, List]:
-
+    def descriptionCallback(self, request, response):
         """The descriptionCallback function is a service that can be called to showcase the available actions a robot
         can preform as well as deliver essential information required by the master node.
 
@@ -77,16 +59,7 @@ class sealerNode(Node):
         Tuple[str, List]
             The robot steps it can do
         """
-
-        if request.description_request == "Sealer":
-
-            response.description_response = self.sealerDescription
-
-            self.get_logger().info("Incoming  Good")
-
-        else:
-
-            response.description_response = "Sealer Description Failed"
+        response.description_response = str(self.description)
 
         return response
 
@@ -112,7 +85,7 @@ class sealerNode(Node):
         if "prepare_sealer" in self.manager_command:
             sealer.set_time()
             sealer.set_temp()
-            # sealer.reset()
+            sealer.reset()
 
             response.action_response = True
         else:
@@ -123,20 +96,21 @@ class sealerNode(Node):
     def stateCallback(self):
         """The state of the robot, can be ready, completed, busy, error"""
 
-        msg1 = String()
+        msg = String()
 
-        msg1.data = "State %s" % self.state
+        msg.data = "State %s" % self.state
 
-        self.statePub.publish(msg1)
+        self.statePub.publish(msg)
 
-        self.get_logger().info('Publishing: "%s"' % msg1.data)
-
-        self.i1 += 1
+        self.get_logger().info('Publishing: "%s"' % msg.data)
 
         self.state = "READY"
 
 
 def main(args=None):  # noqa: D103
+
+    PORT = "/dev/ttyUSB0"       # Port name for peeler
+    NODE_NAME = "Sealer_Node"   # Node name for peeler   
 
     rclpy.init(args=args)  # initialize Ros2 communication
 
