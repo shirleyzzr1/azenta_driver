@@ -53,12 +53,12 @@ class peelerNode(Node):
         -----------
         request: str
             Request to the robot to deliver actions
-        response: Tuple[str, List]
+        response: str
             The actions a robot can do, will be populated during execution
 
         Returns
         -------
-        Tuple[str, List]
+        str
             The robot steps it can do
         """
         response.description_response = str(self.description)
