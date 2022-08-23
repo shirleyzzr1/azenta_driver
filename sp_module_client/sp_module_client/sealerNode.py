@@ -6,7 +6,7 @@ from typing import List, Tuple
 import rclpy  # import Rospy
 from azenta_driver.sealer_client import A4S_SEALER_CLIENT  # import sealer driver
 from rclpy.node import Node  # import Rospy Node
-from sp_module_services.srv import PeelerActions, PeelerDescription
+from wei_services.srv import WeiActions, WeiDescription
 from std_msgs.msg import String
 
 class sealerNode(Node):
@@ -38,9 +38,9 @@ class sealerNode(Node):
         self.statePub = self.create_publisher(String, "sealer_state", 10)       # Publisher for sealer state
         self.stateTimer = self.create_timer(timer_period, self.stateCallback)   # Callback that publishes to sealer state
 
-        self.actionSrv = self.create_service(PeelerActions, NODE_NAME + "/actions", self.actionCallback)
+        self.actionSrv = self.create_service(WeiActions, NODE_NAME + "/actions", self.actionCallback)
 
-        self.descriptionSrv = self.create_service(PeelerDescription, NODE_NAME + "/description", self.descriptionCallback)
+        self.descriptionSrv = self.create_service(WeiDescription, NODE_NAME + "/description", self.descriptionCallback)
 
 
     def descriptionCallback(self, request, response):
@@ -86,6 +86,11 @@ class sealerNode(Node):
             sealer.set_time()
             sealer.set_temp()
             sealer.reset()
+
+        if "seal" in self.manager_command:
+            sealer.set_time()
+            sealer.set_temp()
+            sealer.seal()
 
             response.action_response = True
         else:
