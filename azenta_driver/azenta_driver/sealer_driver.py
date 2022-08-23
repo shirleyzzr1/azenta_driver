@@ -87,9 +87,9 @@ class A4S_SEALER_CLIENT():
         Adjusts seal to given temperature.
         '''
 
-        cmd_string = '*00DH=0100zz!'
+        cmd_string = f'*00DH=0{temp}zz!'
         success_msg = "Setting Temp. to %d°C"%(temp)
-        err_msg = "Failed to Set Temp. to 100°C"          
+        err_msg = "Failed to Set Temp. to %d°"%(temp)         
         self.send_command(cmd_string, success_msg, err_msg)
        
     def set_time(self, time=3.0):
@@ -97,7 +97,7 @@ class A4S_SEALER_CLIENT():
         Adjusts seal time to given time.
         '''
 
-        cmd_string = '*00DT=005zz!'
+        cmd_string = f'*00DT=00{time}zz!'
         success_msg = "Setting Seal Time to %s S"%(time)
         err_msg = "Failed to Set Seal Time to %s S"%(time)
         self.send_command(cmd_string, success_msg, err_msg)

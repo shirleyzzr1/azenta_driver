@@ -4,9 +4,9 @@
 from typing import List, Tuple
 
 import rclpy  # import Rospy
-from azenta_driver.peeler_client import BROOKS_PEELER_CLIENT  # import peeler driver
+from azenta_driver.peeler_driver import BROOKS_PEELER_CLIENT  # import peeler driver
 from rclpy.node import Node  # import Rospy Node
-from sp_module_services.srv import PeelerActions, PeelerDescription
+from wei_services.srv import WeiActions, WeiDescription
 from std_msgs.msg import String
 
 
@@ -16,7 +16,7 @@ class peelerNode(Node):
     based on the executed command and publishes the state of the peeler and a description of the peeler to the respective topics.
     """
 
-    def __init__(self, PORT="/dev/ttyUSB1", NODE_NAME="peelerNode"):
+    def __init__(self, PORT="/dev/ttyUSB0", NODE_NAME="peelerNode"):
         """
         The init function is neccesary for the peelerNode class to initialize all variables, parameters, and other functions.
         Inside the function the parameters exist, and calls to other functions and services are made so they can be executed in main.
@@ -37,13 +37,13 @@ class peelerNode(Node):
             }
             }
 
-        timer_period = 0.5  # seconds
+        timer_period = 1  # seconds
         self.statePub = self.create_publisher(String, "peeler_state", 10)       # Publisher for peeler state
         self.stateTimer = self.create_timer(timer_period, self.stateCallback)   # Callback that publishes to peeler state
 
-        self.actionSrv = self.create_service(PeelerActions, NODE_NAME + "/actions", self.actionCallback)
+        self.actionSrv = self.create_service(WeiActions, NODE_NAME + "/actions", self.actionCallback)
 
-        self.descriptionSrv = self.create_service(PeelerDescription, NODE_NAME + "/description", self.descriptionCallback)
+        self.descriptionSrv = self.create_service(WeiDescription, NODE_NAME + "/description", self.descriptionCallback)
 
     def descriptionCallback(self, request, response):
         """The descriptionCallback function is a service that can be called to showcase the available actions a robot

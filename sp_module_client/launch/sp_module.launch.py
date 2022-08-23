@@ -18,11 +18,11 @@ def generate_launch_description():
             name='sealerNode'
         ),
 
-        Node(
-            package='sp_module_client',
-            namespace='sp_module',
-            executable='cameraNode',
-            name='cameraNode'
-        ),
+#        Node(
+#            package='sp_module_client',
+#            namespace='sp_module',
+#            executable='cameraNode',
+#            name='cameraNode'
+#        ),
 
     ])

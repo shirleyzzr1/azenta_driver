@@ -4,9 +4,9 @@
 from typing import List, Tuple
 
 import rclpy  # import Rospy
-from azenta_driver.sealer_client import A4S_SEALER_CLIENT  # import sealer driver
+from azenta_driver.sealer_driver import A4S_SEALER_CLIENT  # import sealer driver
 from rclpy.node import Node  # import Rospy Node
-from sp_module_services.srv import PeelerActions, PeelerDescription
+from wei_services.srv import WeiActions, WeiDescription
 from std_msgs.msg import String
 
 class sealerNode(Node):
@@ -16,7 +16,7 @@ class sealerNode(Node):
     Inside the function the parameters exist, and calls to other functions and services are made so they can be executed in main.
     """
 
-    def __init__(self, PORT = "/dev/ttyUSB0", NODE_NAME = "Sealer_Node"):
+    def __init__(self, PORT = "/dev/ttyUSB1", NODE_NAME = "sealerNode"):
         """Setup sealer node"""
 
         super().__init__(NODE_NAME)
@@ -34,13 +34,13 @@ class sealerNode(Node):
             }
             }
 
-        timer_period = 0.5  # seconds
+        timer_period = 1  # seconds
         self.statePub = self.create_publisher(String, "sealer_state", 10)       # Publisher for sealer state
         self.stateTimer = self.create_timer(timer_period, self.stateCallback)   # Callback that publishes to sealer state
 
-        self.actionSrv = self.create_service(PeelerActions, NODE_NAME + "/actions", self.actionCallback)
+        self.actionSrv = self.create_service(WeiActions, NODE_NAME + "/actions", self.actionCallback)
 
-        self.descriptionSrv = self.create_service(PeelerDescription, NODE_NAME + "/description", self.descriptionCallback)
+        self.descriptionSrv = self.create_service(WeiDescription, NODE_NAME + "/description", self.descriptionCallback)
 
 
     def descriptionCallback(self, request, response):
@@ -78,14 +78,18 @@ class sealerNode(Node):
         -------
         None
         """
-        self.manager_command = "prepare_sealer"  # request.action # Run commands if manager sends corresponding command
-
+        self.manager_command = request.action_request
         self.state = "BUSY"
 
         if "prepare_sealer" in self.manager_command:
-            sealer.set_time()
-            sealer.set_temp()
-            sealer.reset()
+            self.sealer.set_time()
+            self.sealer.set_temp()
+            self.sealer.reset()
+
+        if "seal" in self.manager_command:
+            #self.sealer.set_time(3)
+            #self.sealer.set_temp(175)
+            self.sealer.seal()
 
             response.action_response = True
         else:
@@ -110,7 +114,7 @@ class sealerNode(Node):
 def main(args=None):  # noqa: D103
 
     PORT = "/dev/ttyUSB0"       # Port name for peeler
-    NODE_NAME = "Sealer_Node"   # Node name for peeler   
+    NODE_NAME = "sealerNode"   # Node name for peeler   
 
     rclpy.init(args=args)  # initialize Ros2 communication
 
