@@ -1,8 +1,0 @@
-srv/PeelerActions.idl
-srv/PeelerActions.srv
-srv/PeelerActions_Request.msg
-srv/PeelerActions_Response.msg
-srv/PeelerDescription.idl
-srv/PeelerDescription.srv
-srv/PeelerDescription_Request.msg
-srv/PeelerDescription_Response.msg
