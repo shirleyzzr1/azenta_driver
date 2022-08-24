@@ -91,6 +91,11 @@ class sealerNode(Node):
             #self.sealer.set_temp(175)
             self.sealer.seal()
 
+        if "seal" in self.manager_command:
+            sealer.set_time()
+            sealer.set_temp()
+            sealer.seal()
+
             response.action_response = True
         else:
             response.action_response = False
