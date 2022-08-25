@@ -248,3 +248,5 @@ The nodes within the package can be started one of 2 ways:
    In terminal:
    
         ros2 launch sp_module_client sp_module.launch.py
+	
+## ROS2 Service Call Guide
