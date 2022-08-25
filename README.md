@@ -11,57 +11,25 @@
 <p>&nbsp;</p>
 
 ## Description
-A repository for Brooks XPeel, including user manuals and remote control interfaces.
+This repository is provides drivers and ROS2 clients that are able to send commands to the Brooks XPeel peeler and the A4S sealer. 
 
-This package guides a user to remotely control and receive feedback from the XPeel.
-
-Peeler is the main object responsible for removing seals off of microplates
+The package is composed of 3 folders:
+* azenta_driver
+  * Contains drivers for sending command to the sealer & peeler 
+  * The peeler_driver.py file is responsible for sending commands for removing seals off of microplates
+  * The sealer_driver.py file is responsible for sending commands for adding seals on to microplates
+* sp_module_client
+  * Contains ROS2 nodes that that interface with the drivers and receive service commands using the wei_service ROS service package
+* docker
+  * Contains Dockerfile that builds an image, runs a container, and executes a launchfile
 <p>&nbsp;</p>
 
-## Current Features
-* Peeler initialization
-* Peeler information (version number, current status, tape remaining, etc.)
-* Basic movements (move conveyor, spool, reset microplate, etc.)
-* Execute peeling 
-* Change sensor threshold value
-* Displays up to 3 error messages at at ime
-<p>&nbsp;</p>
-
-## User Guide
-1. ### Find and setup port
-	* Connect XPeel Driver to device with a serial to usb cable.
-	* Find XPeel port ex: "/dev/ttyUSB0" 
-		In terminal:
-
-			sudo sysctl kernel.dmesg_restrict=0
-			dmesg | grep tty
-		
-		Example Response:
-
-			[    0.132054] printk: console [tty0] enabled
-			[    3.707958] usb 3-1: pl2303 converter now attached to ttyUSB0
-			[ 9876.778770] pl2303 ttyUSB0: pl2303 converter now disconnected from ttyUSB0
-			[ 9885.263688] usb 3-1: pl2303 converter now attached to ttyUSB0
-
-		* Disconnect peeler
-
-			  dmesg | grep tty
-			
-		Example Response:
-
-			[    0.132054] printk: console [tty0] enabled
-			[    3.707958] usb 3-1: pl2303 converter now attached to ttyUSB0
-			[ 9876.778770] pl2303 ttyUSB0: pl2303 converter now disconnected from ttyUSB0
-
-		* Compare difference to find port name
-				
-				sudo usermod -a -G dialout $USER
-	
+## User Setup Guide
 
 1. ### Git Clone azenta_driver repository
 	In terminal:
 	
-		git clone <insert link>
+		git clone https://github.com/AD-SDL/azenta_driver.git
 
 2. ### Launching azenta driver on personal device
 
@@ -72,18 +40,35 @@ Peeler is the main object responsible for removing seals off of microplates
         touch __init__.py
         cd ..
         python setup.py
+	
+## Azenta Driver Send Command Guide
 
-3. ### Sending commands to XPeel:
+### Sending commands to XPeel driver:
+	* Connect XPeel Driver to device with a serial to usb cable
+	* Find XPeel port ex: "/dev/ttyUSB0"
 
    	In Python:
     
-		from azenta_driver.peeler_client import BROOKS_PEELER_CLIENT
+		from azenta_driver.peeler_driver import BROOKS_PEELER_CLIENT
 		peeler = BROOKS_PEELER_CLIENT(port)
+		
+	* Send commands (provided below)
+	
+### Sending commands to A4S driver:
+	* Connect A4S Driver to device with a serial to usb cable
+	* Find A4S port ex: "/dev/ttyUSB0"
 
+   	In Python:
+    
+		from azenta_driver.sealer_driver import A4S_SEALER_CLIENT
+		sealer = A4S_SEALER_CLIENT(port)
+		
 	* Send commands (provided below)
 <p>&nbsp;</p>
 
-## Commands
+## Azenta Driver Commands
+### Commands for XPeel driver:
+
 	   
 1.     peeler.check_status()
 
