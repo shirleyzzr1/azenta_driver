@@ -81,24 +81,24 @@ class peelerNode(Node):
         None
         """
 
-        self.manager_command = request.action_request  # Run commands if manager sends corresponding command
+        action_handle = request.action_handle  # Run commands if manager sends corresponding command
         self.state = "BUSY"
         self.stateCallback()
 
-        if "status" in self.manager_command:
+        if "status" in action_handle:
             self.peeler.reset()
             self.peeler.check_version()
             self.peeler.check_status()
 
             response.action_response = True
 
-        elif "peel" in self.manager_command:
+        elif "peel" in action_handle:
             self.peeler.seal_check()
             self.peeler.peel(1, 2.5)
 
             response.action_response = True
 
-        elif "check_threshold" in self.manager_command:
+        elif "check_threshold" in action_handle:
             self.peeler.sensor_threshold()
 
             response.action_response = True

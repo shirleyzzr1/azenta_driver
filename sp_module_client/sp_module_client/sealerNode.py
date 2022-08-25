@@ -78,23 +78,18 @@ class sealerNode(Node):
         -------
         None
         """
-        self.manager_command = request.action_request
+        action_handle = request.action_request
         self.state = "BUSY"
 
-        if "prepare_sealer" in self.manager_command:
+        if "prepare_sealer" in action_handle:
             self.sealer.set_time()
             self.sealer.set_temp()
             self.sealer.reset()
 
-        if "seal" in self.manager_command:
+        if "seal" in action_handle:
             #self.sealer.set_time(3)
             #self.sealer.set_temp(175)
             self.sealer.seal()
-
-        if "seal" in self.manager_command:
-            sealer.set_time()
-            sealer.set_temp()
-            sealer.seal()
 
             response.action_response = True
         else:
