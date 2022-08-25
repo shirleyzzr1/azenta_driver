@@ -1,8 +1,5 @@
 # azenta_driver
 
-# Brooks XPeel 
-
-
 ## Authors and Maintainers
 * Sanjiv Parthasarathy
 * Rafael Vescovi
