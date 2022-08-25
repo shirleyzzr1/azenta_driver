@@ -186,6 +186,35 @@ command is called until the elevator reaches it full up home position.
 
 This command causes the spool to advance approximately 10mm of tape.
 
+### Commands for A4S driver:
+
+1.     sealer.reset()
+
+This command makes the sealer device clear error status' and reset the gate.
+<p>&nbsp;</p>
+
+2.     sealer.open_gate()
+This command makes the sealer device open the gate.
+<p>&nbsp;</p>
+
+3.     sealer.close_gate()
+This command makes the sealer device close the gate.
+<p>&nbsp;</p>
+
+4.     sealer.set_temp(temp)
+This command makes the sealer device set the temperature for the upcoming seal. If a value is not passed the sealing temperature defaults to 175 degrees Celsius.
+<p>&nbsp;</p>
+
+5.     sealer.set_time(time)
+This command sets amount of time the sealer device will keep the seal under a specified temperature for the sealing process. If a value is not passed the sealing time defaults to 3 minutes.
+<p>&nbsp;</p>
+
+6.     sealer.seal()
+This command makes the sealer device seal a microplate for the previously specified amount of time and the previously specified heat.
+<p>&nbsp;</p>
+
+7.     sealer.config_robot(temp,time)
+This command sets the amount of time the sealing proccess will take and the temperature the plate shall be sealed at.
 <p>&nbsp;</p>
 
 ## High Level Concepts
