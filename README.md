@@ -1,13 +1,31 @@
 # azenta_driver
 
-# Brooks XPeel 
 
 
-## Authors and Maintainers
-* Sanjiv Parthasarathy
-* Rafael Vescovi
-* Doga Ozgulbas
-<p>&nbsp;</p>
+
+## Install
+
+The azenta driver can be installed as a stand-alone python package or a ROS-Node 
+
+### Python Driver
+
+  git clone https://github.com/AD-SDL/azenta_module
+  cd azenta_module/azenta_driver
+  python setup.py install 
+
+### Ros Packages
+
+  mkdir ~/azenta_ws
+  cd ~/azenta_ws
+
+  mkdir src
+  cd src
+  git clone https://github.com/AD-SDL/azenta_module
+  git clone https://github.com/AD-SDL/wei_ros
+  cd ..
+  colcon build
+
+
 
 ## Description
 A repository for Brooks XPeel, including user manuals and remote control interfaces.
@@ -226,3 +244,9 @@ Required packages:
 
 
 
+
+## Authors and Maintainers
+* Sanjiv Parthasarathy
+* Rafael Vescovi
+* Doga Ozgulbas
+<p>&nbsp;</p>
