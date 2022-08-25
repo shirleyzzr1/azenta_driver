@@ -1,31 +1,13 @@
 # azenta_driver
 
+# Brooks XPeel 
 
 
-
-## Install
-
-The azenta driver can be installed as a stand-alone python package or a ROS-Node 
-
-### Python Driver
-
-  git clone https://github.com/AD-SDL/azenta_module
-  cd azenta_module/azenta_driver
-  python setup.py install 
-
-### Ros Packages
-
-  mkdir ~/azenta_ws
-  cd ~/azenta_ws
-
-  mkdir src
-  cd src
-  git clone https://github.com/AD-SDL/azenta_module
-  git clone https://github.com/AD-SDL/wei_ros
-  cd ..
-  colcon build
-
-
+## Authors and Maintainers
+* Sanjiv Parthasarathy
+* Rafael Vescovi
+* Doga Ozgulbas
+<p>&nbsp;</p>
 
 ## Description
 A repository for Brooks XPeel, including user manuals and remote control interfaces.
@@ -78,7 +60,7 @@ Peeler is the main object responsible for removing seals off of microplates
 1. ### Git Clone azenta_driver repository
 	In terminal:
 	
-		git clone <insert link>
+		git clone https://github.com/AD-SDL/azenta_driver.git
 
 2. ### Launching azenta driver on personal device
 
@@ -89,18 +71,24 @@ Peeler is the main object responsible for removing seals off of microplates
         touch __init__.py
         cd ..
         python setup.py
+	
+## Azenta Driver Send Command Guide
 
-3. ### Sending commands to XPeel:
+### Sending commands to XPeel driver:
+	* Connect XPeel Driver to device with a serial to usb cable
+	* Find XPeel port ex: "/dev/ttyUSB0"
 
    	In Python:
     
-		from azenta_driver.peeler_client import BROOKS_PEELER_CLIENT
+		from azenta_driver.peeler_driver import BROOKS_PEELER_CLIENT
 		peeler = BROOKS_PEELER_CLIENT(port)
 
 	* Send commands (provided below)
 <p>&nbsp;</p>
 
-## Commands
+## Azenta Driver Commands
+### Commands for XPeel driver:
+  * The peeler_driver.py file is responsible for sending commands for removing seals off of microplates
 	   
 1.     peeler.check_status()
 
@@ -228,6 +216,7 @@ This command causes the spool to advance approximately 10mm of tape.
 		
 <p>&nbsp;</p>
 
+
 ## Python Dependencies
 Code developed and tested with Python 3.9.12
 
@@ -243,10 +232,5 @@ Required packages:
         pip install regex
 
 
+   In terminal:
 
-
-## Authors and Maintainers
-* Sanjiv Parthasarathy
-* Rafael Vescovi
-* Doga Ozgulbas
-<p>&nbsp;</p>
