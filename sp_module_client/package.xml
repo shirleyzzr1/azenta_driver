@@ -11,12 +11,7 @@
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
   <depend>wei_module_services</depend>
-<<<<<<< HEAD
   <depend>azenta_driver</depend>
-=======
-  
->>>>>>> 97bc844bee65b3169abc8b2092353e1897b4554a
-
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
