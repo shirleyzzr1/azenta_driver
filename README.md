@@ -217,13 +217,6 @@ This command makes the sealer device seal a microplate for the previously specif
 This command sets the amount of time the sealing proccess will take and the temperature the plate shall be sealed at.
 <p>&nbsp;</p>
 
-## High Level Concepts
-1. Peeler information is initialized
-2. When a command is called a corresponding string is sent to the peeler.
-3. The Peeler interprets this string and ouputs data/performs an action accordingly.
-4. Python interprets output data from Peeler and displays messages while decoding error messages.
-		
-<p>&nbsp;</p>
 
 ## Python Dependencies
 Code developed and tested with Python 3.9.12
