@@ -13,8 +13,6 @@ This repository is provides drivers and ROS2 clients that are able to send comma
 The package is composed of 3 folders:
 * azenta_driver
   * Contains drivers for sending command to the sealer & peeler 
-  * The peeler_driver.py file is responsible for sending commands for removing seals off of microplates
-  * The sealer_driver.py file is responsible for sending commands for adding seals on to microplates
 * sp_module_client
   * Contains ROS2 nodes that that interface with the drivers and receive service commands using the wei_service ROS service package
 * docker
@@ -65,7 +63,7 @@ The package is composed of 3 folders:
 
 ## Azenta Driver Commands
 ### Commands for XPeel driver:
-
+  * The peeler_driver.py file is responsible for sending commands for removing seals off of microplates
 	   
 1.     peeler.check_status()
 
@@ -184,6 +182,7 @@ command is called until the elevator reaches it full up home position.
 This command causes the spool to advance approximately 10mm of tape.
 
 ### Commands for A4S driver:
+  * The sealer_driver.py file is responsible for sending commands for adding seals on to microplates
 
 1.     sealer.reset()
 
@@ -229,6 +228,23 @@ Required packages:
 
         pip install regex
 
-## ROS2 Nodes Services Guide
+## ROS2 Nodes Start Guide
+### Setting up ROS2 workspace
 
+   In terminal:
 
+        cd <workspace location>
+        colcon build
+        source install/setup.bash
+	
+The nodes within the package can be started one of 2 ways:
+1. ### Launching individual node
+
+   In terminal:
+   
+        ros2 run sp_module_client <node name>
+1. ### Launching all nodes within the package
+
+   In terminal:
+   
+        ros2 launch sp_module_client sp_module.launch.py
