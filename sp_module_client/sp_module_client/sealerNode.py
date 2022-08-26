@@ -16,7 +16,7 @@ class sealerNode(Node):
     Inside the function the parameters exist, and calls to other functions and services are made so they can be executed in main.
     """
 
-    def __init__(self, PORT = "/dev/ttyUSB1", NODE_NAME = "sealerNode"):
+    def __init__(self, PORT, NODE_NAME = "sealerNode"):
         """Setup sealer node"""
 
         super().__init__(NODE_NAME)
@@ -38,9 +38,9 @@ class sealerNode(Node):
         self.statePub = self.create_publisher(String, "sealer_state", 10)       # Publisher for sealer state
         self.stateTimer = self.create_timer(timer_period, self.stateCallback)   # Callback that publishes to sealer state
 
-        self.actionSrv = self.create_service(WeiActions, NODE_NAME + "/actions", self.actionCallback)
+        self.actionSrv = self.create_service(WeiActions, NODE_NAME + "/action_handler", self.actionCallback)
 
-        self.descriptionSrv = self.create_service(WeiDescription, NODE_NAME + "/description", self.descriptionCallback)
+        self.descriptionSrv = self.create_service(WeiDescription, NODE_NAME + "/description_handler", self.descriptionCallback)
 
 
     def descriptionCallback(self, request, response):
@@ -78,24 +78,26 @@ class sealerNode(Node):
         -------
         None
         """
-        action_handle = request.action_request
-        self.state = "BUSY"
+        
+        if request.action_handle=='seal':
+            self.state = "BUSY"
+            self.stateCallback()
+            vars = eval(request.vars)
+            print(vars)
 
-        if "prepare_sealer" in action_handle:
-            self.sealer.set_time()
-            self.sealer.set_temp()
-            self.sealer.reset()
-
-        if "seal" in action_handle:
+            time = vars.get('time',3)
+            temp = vars.get('temp',175)
+            
             #self.sealer.set_time(3)
             #self.sealer.set_temp(175)
             self.sealer.seal()
 
             response.action_response = True
-        else:
-            response.action_response = False
 
         self.state = "COMPLETED"
+
+        return response
+
 
     def stateCallback(self):
         """The state of the robot, can be ready, completed, busy, error"""

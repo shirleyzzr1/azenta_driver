@@ -41,9 +41,9 @@ class peelerNode(Node):
         self.statePub = self.create_publisher(String, "peeler_state", 10)       # Publisher for peeler state
         self.stateTimer = self.create_timer(timer_period, self.stateCallback)   # Callback that publishes to peeler state
 
-        self.actionSrv = self.create_service(WeiActions, NODE_NAME + "/actions", self.actionCallback)
+        self.actionSrv = self.create_service(WeiActions, NODE_NAME + "/action_handler", self.actionCallback)
 
-        self.descriptionSrv = self.create_service(WeiDescription, NODE_NAME + "/description", self.descriptionCallback)
+        self.descriptionSrv = self.create_service(WeiDescription, NODE_NAME + "/description_handler", self.descriptionCallback)
 
     def descriptionCallback(self, request, response):
         """The descriptionCallback function is a service that can be called to showcase the available actions a robot
@@ -85,21 +85,19 @@ class peelerNode(Node):
         self.state = "BUSY"
         self.stateCallback()
 
-        if "status" in action_handle:
+        if action_handle=="status":
             self.peeler.reset()
             self.peeler.check_version()
             self.peeler.check_status()
 
             response.action_response = True
 
-        elif "peel" in action_handle:
+        elif action_handle=="peel":
+            vars = eval(request.vars)
+            print(vars)
+
             self.peeler.seal_check()
             self.peeler.peel(1, 2.5)
-
-            response.action_response = True
-
-        elif "check_threshold" in action_handle:
-            self.peeler.sensor_threshold()
 
             response.action_response = True
 
