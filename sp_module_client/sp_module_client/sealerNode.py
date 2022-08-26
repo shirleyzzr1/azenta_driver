@@ -8,6 +8,7 @@ from azenta_driver.sealer_driver import A4S_SEALER_CLIENT  # import sealer drive
 from rclpy.node import Node  # import Rospy Node
 from wei_services.srv import WeiActions, WeiDescription
 from std_msgs.msg import String
+from time import sleep
 
 class sealerNode(Node):
 
@@ -91,7 +92,7 @@ class sealerNode(Node):
             #self.sealer.set_time(3)
             #self.sealer.set_temp(175)
             self.sealer.seal()
-
+            sleep(10)
             response.action_response = True
 
         self.state = "COMPLETED"
@@ -120,7 +121,7 @@ def main(args=None):  # noqa: D103
 
     rclpy.init(args=args)  # initialize Ros2 communication
 
-    node = sealerNode()
+    node = sealerNode(PORT=PORT, NODE_NAME=NODE_NAME)
 
     rclpy.spin(node)  # keep Ros2 communication open for action node
 
