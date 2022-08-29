@@ -97,7 +97,7 @@ class A4S_SEALER_CLIENT():
         Adjusts seal time to given time.
         '''
 
-        cmd_string = f'*00DT=00{time}zz!'
+        cmd_string = f'*00DT=000{time}zz!'
         success_msg = "Setting Seal Time to %s S"%(time)
         err_msg = "Failed to Set Seal Time to %s S"%(time)
         self.send_command(cmd_string, success_msg, err_msg)
