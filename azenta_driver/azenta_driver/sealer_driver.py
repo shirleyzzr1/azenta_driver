@@ -3,6 +3,7 @@ import os.path
 import time
 import serial
 import logging
+import re
 
 #Log Configuration
 # file_path = os.path.join(os.path.split(os.path.dirname(__file__))[0]  + '/sealer_logs/sealer_logs.log')
@@ -24,6 +25,9 @@ class A4S_SEALER_CLIENT():
         self.host_path = host_path
         self.baud_rate = baud_rate
         ser = self.connect_sealer()
+        self.output=''
+        self.status = ''
+        self.heat=''
 
     def connect_sealer(self):
         '''
@@ -38,16 +42,56 @@ class A4S_SEALER_CLIENT():
             pass
         return ser
 
-    def send_command(self, command, success_msg ="", err_msg = ""):
+    def response_fun(self, time_wait):                         
         '''
-        Sends the given command to the sealer.
-        Resets sealer before sending given command. 
+        Records the data outputted by the Peeler and sets it to equal "" if no data is outputted in the provided time.
         '''
 
         ser = self.connect_sealer()
-#        ser.write(command.encode('*00SR=zz!'))
-        ser.write(command.encode('utf-8')) 
-     
+        response_timer = time.time()
+        while time.time() - response_timer < time_wait: 
+            if ser.in_waiting != 0:           
+                response = ser.read_until(expected=b'!')
+                response_string = response.decode('utf-8')
+                response_string_pat = re.search(r"=\d+,(\d+),(\d+),\d+,\d+,\d+", response_string)
+                if response_string_pat:
+                    self.status=int(response_string_pat[1])
+                    self.heat=int(response_string_pat[2])
+                    print('status = ' + str(self.status))
+                break
+            else:
+                response_string = ""
+        return response_string
+
+
+    def send_command(self, command, success_msg="", err_msg="", timeout=10):
+        ''' 
+        '''
+
+        self.output = self.output+ 'Command: ' + command + "\n"
+        
+        ser = self.connect_sealer()
+        ser.write(command.encode('utf-8'))        
+
+        ready_timer = time.time()
+        response_buffer = ""
+
+        while self.status!=0:
+            new_string = self.response_fun(timeout)
+            print(new_string)
+            if new_string != "":
+                self.output = self.output + new_string + '\n'
+
+            response_buffer = response_buffer + new_string
+            
+            if time.time() - ready_timer > 20:
+                print('timed out')
+                break
+
+        return response_buffer
+
+    def get_status(self,timeout=500):
+        self.response_fun(timeout)     
 
     def get_error(self):
         pass
@@ -86,8 +130,8 @@ class A4S_SEALER_CLIENT():
         '''
         Adjusts seal to given temperature.
         '''
-
-        cmd_string = f'*00DH=0{temp}zz!'
+        temp = str(temp).zfill(4)
+        cmd_string = f'*00DH={temp}zz!'
         success_msg = "Setting Temp. to %d°C"%(temp)
         err_msg = "Failed to Set Temp. to %d°"%(temp)         
         self.send_command(cmd_string, success_msg, err_msg)
@@ -96,8 +140,8 @@ class A4S_SEALER_CLIENT():
         '''
         Adjusts seal time to given time.
         '''
-
-        cmd_string = f'*00DT=000{time}zz!'
+        time = str(int(time*10)).zfill(4)
+        cmd_string = f'*00DT={time}zz!'
         success_msg = "Setting Seal Time to %s S"%(time)
         err_msg = "Failed to Set Seal Time to %s S"%(time)
         self.send_command(cmd_string, success_msg, err_msg)
