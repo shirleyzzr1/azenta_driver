@@ -135,7 +135,7 @@ class BROOKS_PEELER_CLIENT():
             self.error_msg = self.error_msg + error_code_msg + '\n'
 
 
-    def check_status(self):
+    def get_status(self):
         '''
         Checks if there are currently any errors.
         '''

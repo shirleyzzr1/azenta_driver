@@ -25,8 +25,8 @@ class peelerNode(Node):
         super().__init__(NODE_NAME)
 
 
-        #self.declare_parameter('peeler_port')       # Declaring parameter so it is able to be retrieved from module_params.yaml file
-        #PORT = self.get_parameter('peeler_port')    # Renaming parameter to general form so it can be used for other nodes too
+        self.declare_parameter('peeler_port')       # Declaring parameter so it is able to be retrieved from module_params.yaml file
+        PORT = self.get_parameter('peeler_port')    # Renaming parameter to general form so it can be used for other nodes too
 
         self.peeler = BROOKS_PEELER_CLIENT(PORT)
         print("Peeler is online")                   # Wakeup Message
