@@ -126,7 +126,7 @@ class peelerNode(Node):
 
         self.get_logger().info('Publishing: "%s"' % msg.data)
 
-        self.state = self.peeler.get_status()
+        self.state = self.peeler.check_status()
 
 
 def main(args=None):  # noqa: D103
