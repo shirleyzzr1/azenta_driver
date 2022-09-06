@@ -25,12 +25,13 @@ class peelerNode(Node):
         super().__init__(NODE_NAME)
 
 
-        self.declare_parameter('peeler_port')       # Declaring parameter so it is able to be retrieved from module_params.yaml file
+        self.declare_parameter('peeler_port', '/dev/ttyUSB0')       # Declaring parameter so it is able to be retrieved from module_params.yaml file
         PORT = self.get_parameter('peeler_port')    # Renaming parameter to general form so it can be used for other nodes too
 
         self.peeler = BROOKS_PEELER_CLIENT(PORT)
         print("Peeler is online")                   # Wakeup Message
-        self.state = self.peeler.get_status() 
+        self.state = 'ready'
+        # self.state = self.peeler.get_status() 
 
         self.description = {
             'name': NODE_NAME,
@@ -126,7 +127,7 @@ class peelerNode(Node):
 
         self.get_logger().info('Publishing: "%s"' % msg.data)
 
-        self.state = self.peeler.get_status()
+        # self.state = self.peeler.get_status()
 
 
 def main(args=None):  # noqa: D103

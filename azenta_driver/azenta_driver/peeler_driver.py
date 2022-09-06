@@ -40,7 +40,7 @@ class BROOKS_PEELER_CLIENT():
         except:
             self.peeler_output = self.peeler_output + "Wrong port entered" + '\n'
             pass
-        return ser
+        return ser  
 
 
     def response_fun(self, time_wait):                         

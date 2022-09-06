@@ -22,9 +22,14 @@ class sealerNode(Node):
 
         super().__init__(NODE_NAME)
 
+        self.declare_parameter('sealer_port', '/dev/ttyUSB1')       # Declaring parameter so it is able to be retrieved from module_params.yaml file
+        PORT = self.get_parameter('sealer_port')    # Renaming parameter to general form so it can be used for other nodes too
+
         self.sealer = A4S_SEALER_CLIENT(PORT)
         print("Sealer is online")               # Wakeup Message
         self.state = "UNKOWN"
+
+
 
         self.description = {
             'name': NODE_NAME,

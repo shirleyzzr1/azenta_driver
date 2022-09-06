@@ -20,12 +20,13 @@ def generate_launch_description():
         parameters = [config]
     )
 
-#     sealer = Node(
-#         package='sp_module_client',
-#         namespace='sp_module',
-#             executable='sealerNode',
-#         name='sealerNode'
-#         ),
+    # sealer=Node(
+    #     package='sp_module_client',
+    #     namespace='sp_module',
+    #     executable='sealerNode',
+    #     name='sealerNode',
+    #     # parameters = [config]
+    # )
 
 # #        Node(
 # #            package='sp_module_client',
@@ -35,5 +36,6 @@ def generate_launch_description():
 # #        ),
 
     ld.add_action(peeler)
-#     ld.add_action(sealer)
+    # ld.add_action(sealer)
+
     return ld
