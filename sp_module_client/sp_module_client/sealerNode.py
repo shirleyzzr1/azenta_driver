@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 """Sealer Node"""
 
+import string
 from typing import List, Tuple
 
 import rclpy  # import Rospy
@@ -17,15 +18,17 @@ class sealerNode(Node):
     Inside the function the parameters exist, and calls to other functions and services are made so they can be executed in main.
     """
 
-    def __init__(self, PORT, NODE_NAME = "sealerNode"):
+    def __init__(self, NODE_NAME = "sealerNode"):
         """Setup sealer node"""
 
         super().__init__(NODE_NAME)
 
         self.declare_parameter('sealer_port', '/dev/ttyUSB1')       # Declaring parameter so it is able to be retrieved from module_params.yaml file
         PORT = self.get_parameter('sealer_port')    # Renaming parameter to general form so it can be used for other nodes too
+        self.sealer = A4S_SEALER_CLIENT(PORT.value)
+        
 
-        self.sealer = A4S_SEALER_CLIENT(PORT)
+
         print("Sealer is online")               # Wakeup Message
         self.state = "UNKOWN"
 
@@ -121,12 +124,12 @@ class sealerNode(Node):
 
 def main(args=None):  # noqa: D103
 
-    PORT = "/dev/ttyUSB0"       # Port name for peeler
+    PORT = "/dev/ttyUSB1"       # Port name for peeler
     NODE_NAME = "sealerNode"   # Node name for peeler   
 
     rclpy.init(args=args)  # initialize Ros2 communication
 
-    node = sealerNode(PORT=PORT, NODE_NAME=NODE_NAME)
+    node = sealerNode(NODE_NAME=NODE_NAME)
 
     rclpy.spin(node)  # keep Ros2 communication open for action node
 

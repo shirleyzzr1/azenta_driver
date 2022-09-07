@@ -16,7 +16,7 @@ class peelerNode(Node):
     based on the executed command and publishes the state of the peeler and a description of the peeler to the respective topics.
     """
 
-    def __init__(self, PORT='/dev/ttyUSB0', NODE_NAME="peelerNode"):
+    def __init__(self, NODE_NAME="peelerNode"):
         """
         The init function is neccesary for the peelerNode class to initialize all variables, parameters, and other functions.
         Inside the function the parameters exist, and calls to other functions and services are made so they can be executed in main.
@@ -28,7 +28,7 @@ class peelerNode(Node):
         self.declare_parameter('peeler_port', '/dev/ttyUSB0')       # Declaring parameter so it is able to be retrieved from module_params.yaml file
         PORT = self.get_parameter('peeler_port')    # Renaming parameter to general form so it can be used for other nodes too
 
-        self.peeler = BROOKS_PEELER_CLIENT(PORT)
+        self.peeler = BROOKS_PEELER_CLIENT(PORT.value)
         print("Peeler is online")                   # Wakeup Message
         self.state = 'ready'
         # self.state = self.peeler.get_status() 
@@ -132,7 +132,7 @@ class peelerNode(Node):
 
 def main(args=None):  # noqa: D103
 
-    PORT = "/dev/ttyUSB1"       # Port name for peeler
+    PORT = "/dev/ttyUSB0"       # Port name for peeler
     NODE_NAME = "peelerNode"   # Node name for peeler   
 
     rclpy.init(args=args)       # initialize Ros2 communication
