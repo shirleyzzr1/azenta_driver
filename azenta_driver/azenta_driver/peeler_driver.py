@@ -143,7 +143,8 @@ class BROOKS_PEELER_CLIENT():
         cmd_string = '*stat\r\n'
         success_msg = "Displaying status:"
         err_msg = "Displaying status:"
-        self.send_command(cmd_string, success_msg, err_msg)
+        
+        return self.send_command(cmd_string, success_msg, err_msg)
 
 
     

@@ -30,8 +30,8 @@ class peelerNode(Node):
 
         self.peeler = BROOKS_PEELER_CLIENT(PORT.value)
         print("Peeler is online")                   # Wakeup Message
-        self.state = 'ready'
-        # self.state = self.peeler.get_status() 
+        # self.state = 'ready'
+        self.state = self.peeler.get_status() 
 
         self.description = {
             'name': NODE_NAME,
@@ -93,7 +93,7 @@ class peelerNode(Node):
         if action_handle=="status":
             self.peeler.reset()
             self.peeler.check_version()
-            self.peeler.check_status()
+            self.peeler.get_status()
 
             response.action_response = True
 
