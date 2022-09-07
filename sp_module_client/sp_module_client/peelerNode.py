@@ -30,6 +30,7 @@ class peelerNode(Node):
 
         self.peeler = BROOKS_PEELER_CLIENT(PORT.value)
         print("Peeler is online")                   # Wakeup Message
+
         # self.state = 'ready'
         self.state = self.peeler.get_status() 
 
@@ -126,6 +127,7 @@ class peelerNode(Node):
         self.statePub.publish(msg)
 
         self.get_logger().info('Publishing: "%s"' % msg.data)
+
 
         # self.state = self.peeler.get_status()
 
