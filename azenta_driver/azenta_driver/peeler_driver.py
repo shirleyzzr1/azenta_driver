@@ -40,7 +40,7 @@ class BROOKS_PEELER_CLIENT():
         except:
             self.peeler_output = self.peeler_output + "Wrong port entered" + '\n'
             pass
-        return ser
+        return ser  
 
 
     def response_fun(self, time_wait):                         
@@ -135,7 +135,7 @@ class BROOKS_PEELER_CLIENT():
             self.error_msg = self.error_msg + error_code_msg + '\n'
 
 
-    def check_status(self):
+    def get_status(self):
         '''
         Checks if there are currently any errors.
         '''
@@ -143,7 +143,8 @@ class BROOKS_PEELER_CLIENT():
         cmd_string = '*stat\r\n'
         success_msg = "Displaying status:"
         err_msg = "Displaying status:"
-        self.send_command(cmd_string, success_msg, err_msg)
+        
+        return self.send_command(cmd_string, success_msg, err_msg)
 
 
     
